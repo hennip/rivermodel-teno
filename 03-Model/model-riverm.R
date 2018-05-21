@@ -196,6 +196,7 @@ inits.fn<-function() {
 initsall<-list(inits.fn(),inits.fn())
 
 
+
 var_names<-c(
   "CV",  "mu.CV",
   "C.CV",  "a.alpha",  "b.alpha",
@@ -204,19 +205,23 @@ var_names<-c(
   "a.betas",  "b.betas",
   "alpha",  "mu.alpha", "phi.alpha",
   "c.gamma",
-  "gammas",  "phi.S", "c3.gamma",
-  "gammap1",  "phi.P1", "c1.gamma",
-  "gammap2",  "phi.P2", "c2.gamma",
+  #"gammas",  
+  "phi.S", "c3.gamma",
+  #"gammap1",  
+  "phi.P1", "c1.gamma",
+  #"gammap2",  
+  "phi.P2", "c2.gamma",
   "S",  "P2",
   "P1",  "P0",
   "TS",  
   "pr","q",
   "qr",  "aq",
   "p",  "ap",
- "A",
-"TotalS"
- 
+  "A",
+  "TotalS"
+  
 )
+
 
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
