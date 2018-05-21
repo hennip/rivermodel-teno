@@ -245,3 +245,12 @@ difftime(t2,t1)
 run<-run2
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
+t1<-Sys.time();t1
+run3 <- extend.jags(run2, combine=F, sample=10000, thin=10, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+#2.2d?
+
+run<-run3
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+
