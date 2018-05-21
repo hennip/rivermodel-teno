@@ -165,8 +165,8 @@ model{
 
 }"
 
-modelName<-"rivermodel_Baltic"
-
+modelName<-"rivermodel"
+dataName<-"baltic"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -221,23 +221,13 @@ var_names<-c(
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
-run1 <- run.jags(M1, 
-                 data=data,monitor=var_names, inits=NA,
-                 n.chains = 2, method = 'parallel', thin=1, burnin =0, 
-                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
-                 progress.bar=TRUE)
-
-summary(run1, var="phi.S")
-plot(run1, var="phi.S")
-
-run2 <- extend.jags(run1, combine=F, sample=100, thin=1, keep.jags.files=T)
 
 
 t1<-Sys.time();t1
 run1 <- run.jags(M1, 
-                 monitor= var_names,data=data,inits = inits,
-                 n.chains = 2, method = 'parallel', thin=300, burnin =0, 
-                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
+                 data=data,monitor=var_names, inits=NA,
+                 n.chains = 2, method = 'parallel', thin=10, burnin =1000, 
+                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 1000, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
@@ -247,7 +237,7 @@ run<-run1
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=T, sample=10000, thin=10, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 #2.2d?
