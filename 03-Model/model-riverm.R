@@ -16,7 +16,7 @@ model{
 
       #smolt abundance
       S[y,r]~dlnorm(log(ES[y,r])-0.5/tauS[y,r],tauS[y,r])
-      tauS[y,r]<-1/log(phi.S/ES[y,r]+1)                 
+      tauS[y,r]<-1/log(phi.S/ES[y,r]+1)   # phi.S/ES = CV2 <=> phi.S = var(x)/ES (= mu.gammas)              
       bs[y,r]<-pow(gammas[r],2)*ES[y,r]							#Distribution of log-smolts
       
       # ES: expected num of smolts on real scale
@@ -131,7 +131,7 @@ model{
 
   mu.betap~dunif(0,100)
   T.betap<-1/log(phi.betap/mu.betap+1)
-  phi.betap<-pow(c.beta,2)*mu.betap*100
+  phi.betap<-pow(c.beta,2)*mu.betap#*100 # mistä *100 tulee? Ei ole c2.beta:ssa
   c.beta~dunif(0.01,2)
 
   phi.S~dunif(0.01,10)
@@ -172,7 +172,7 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 data<-list(
-n=n, CIS=CIS, IS=IS, IP1=IP1, IP2=IP2, #IP0=IP0, 
+n=n, CIS=CIS, IS=IS, IP1=IP1, IP2=IP2, IP0=IP0, 
 IOP1=IOP1,
   years=41,
   rivers=13,
@@ -207,10 +207,10 @@ var_names<-c(
   "gammas",  "phi.S", "c3.gamma",
   "gammap1",  "phi.P1", "c1.gamma",
   "gammap2",  "phi.P2", "c2.gamma",
-  "S",  "P2",
-  "P1",  "P0",
+  "S",  
+  "P2","P1",  "P0",
   "TS",  
-  "pr","q",
+  #"pr","q",
   "qr",  "aq",
   "p",  "ap",
  "A",
@@ -222,26 +222,44 @@ var_names<-c(
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
 
-
 t1<-Sys.time();t1
-run1 <- run.jags(M1, 
+run0 <- run.jags(M1, 
                  data=data,monitor=var_names, inits=NA,
-                 n.chains = 2, method = 'parallel', thin=10, burnin =1000, 
+                 n.chains = 2, method = 'parallel', thin=1, burnin =0, 
                  modules = "mix",keep.jags.files=T,sample =1000, adapt = 1000, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-# 17h
+
+
+t1<-Sys.time();t1
+#run1 <- run.jags(M1, 
+#                 data=data,monitor=var_names, inits=NA,
+#                 n.chains = 2, method = 'parallel', thin=10, burnin =1000, 
+#                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 1000, 
+#                 progress.bar=TRUE)
+run1 <- extend.jags(run0, combine=F, sample=1000, thin=10, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
 
 run<-run1
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=T, sample=10000, thin=10, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=T, sample=1000, thin=10, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.2d?
 
 run<-run2
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+
+# Continue from saved run
+load("H:/Projects/ISAMA/prg/output/rivermodel-teno/rivermodel_baltic_run.RData")
+
+t1<-Sys.time();t1
+run2 <- extend.jags(run, combine=T, sample=10000, thin=10, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+
+
 
