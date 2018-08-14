@@ -22,4 +22,6 @@ source("00-Functions/my-palette.r")
 pathOut<-"H:/Projects/ISAMA/prg/output/rivermodel-teno/"
 
 source("01-Data/data-baltic-north.r")
+source("01-Data/data-teno.r")
+source("01-Data/data-combine.r")
 
