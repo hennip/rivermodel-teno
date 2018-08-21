@@ -192,15 +192,14 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 # Choose stocks to be included
-#stocks<-c(1:13) # Baltic only
-#stocks<-c(1:14) # Baltic & Utsjoki
-stocks<-c(1,14) # Torne & Utsjoki
+#stocks<-c(1:13);dataName<-"Baltic" # Baltic only
+stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
+#stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki
 #stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
 #stocks<-c(13,14) # Ljungan & Utsjoki : Minimum impact on Utsjoki
-#stocks<-c(1,13,14)
+#stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
 
-#dataName<-"baltic&Uts"
-dataName<-"Utsjoki"
+
 
 
 
