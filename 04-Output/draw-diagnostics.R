@@ -37,6 +37,7 @@ summary(run, var="S[28,14]")
 #Utsjoki
 summary(run, var="S[31,14]") #2010
 summary(run, var="S[35,14]") #2014
+summary(run, var="S[36,14]") #2015
 
 # Torne
 summary(run, var="S[31,1]") #2010
@@ -53,7 +54,7 @@ summary(run, var="phi")
 summary(run, var="TS")
 
 summary(run, var="S[1")
-plot(run, var="TS")
+plot(run, var="TS[41]")
 plot(run, var="phi")
 plot(run, var="gamma")
 

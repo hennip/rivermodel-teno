@@ -47,8 +47,10 @@ dfU<-select(dens, -ave_density)%>%
 smolts<-read.table("H:/Projects/ISAMA/prg/output/Utsjoki-smolts/stats_Smolts_etaB_covs_all.csv",
              header=T, sep=",")[136:148,]
 
-dfs<-as.tibble(list(IS=smolts$mean/1000, CIS=smolts$cv))%>%
-  mutate(year=c(2002:2014))
+dfs<-as.tibble(list(mu=smolts$mean/1000, CIS=smolts$cv))%>%
+  mutate(year=c(2002:2014))%>%
+  mutate(IS=log(mu*(CIS^2+1)))%>%
+  select(-mu)
 
 dfU<-full_join(dfU, dfs, by=NULL)
 #View(tmp)
@@ -60,11 +62,13 @@ dfU<-full_join(dfU, dfs, by=NULL)
 # vielä tarvitaan EA & SA (tee oma sormiharjoitus ensin, miten Utsjoki, Kevo, Tsars arviot yhdistetään. 
 # Tai vedä vaan epävarmuus hatusta tässä vaiheessa. EA=250HA)
 # and we are good to go... nevermind the combatibility issues.
-# - mitkä joet itämereltä voidaan laittaa yhteen Tenon kantojen kanssa
-# - miten pinta-alamäärittelyn yhtenäistämiseen voidaan vaikuttaa
-# - smoltti-ikä?
-# - koealueiden pinta-alat, vaihtelu historiassa? Nyt oletetaan vakio 5 aaria.
-# Tsars & Kevo: hajanaista sähkötysdataa on olemassa. Kuitenkin suurin osa matskusta Utsjoen pääuomasta. Kuinka klaarataan tämä?
+# - mitkä joet itämereltä voidaan laittaa yhteen Tenon kantojen kanssa (mielellään ei ollenkaan)
+# - miten pinta-alamäärittelyn yhtenäistämiseen voidaan vaikuttaa (ei ehkä pysty)
+# - smoltti-ikä? (selvitä tämä!)
+# - koealueiden pinta-alat, vaihtelu historiassa? Nyt oletetaan vakio 5 aaria. Jaska: 1 aari vastaa paremmin todellisuutt
+# Tsars & Kevo: 
+# - hajanaista sähkötysdataa on olemassa. Kuitenkin suurin osa matskusta Utsjoen pääuomasta. Kuinka klaarataan tämä?
+# - Ilmeisesti myös Tsarsilta ja Kevolta on smolttiestimaatteja 80-luvulta?
 # joen koko "kovariaattina". Tämä erityisen tärkeää kun lähdetään yhdistelemään erikokoisia jokia. 
 
 

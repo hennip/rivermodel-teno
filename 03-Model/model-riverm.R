@@ -25,7 +25,7 @@ model{
       bs[y,r]<-pow(gammas[r],2)*ES[y,r]							#Distribution of log-smolts
       
       # ES: expected num of smolts on real scale
-      ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100   # mikä 100?
+      ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100  # mikä 100?
       
       # 2+ parr abundance  relative density!
       P2[y,r]~dlnorm(MP2[y,r],tauP2[y,r])
@@ -75,9 +75,9 @@ model{
     }
     
     #Groups: if rivers are added, sum those into correct groups!
-    TotalS[y,1]<-sum(S[y,1:4])
-    TotalS[y,2]<-sum(S[y,5:11])
-    TotalS[y,3]<-S[y,12]
+  #  TotalS[y,1]<-sum(S[y,1:4])
+  #  TotalS[y,2]<-sum(S[y,5:11])
+  #  TotalS[y,3]<-S[y,12]
   }
   
   for(y in 1:4){
@@ -187,26 +187,42 @@ model{
 }"
 
 modelName<-"rivermodel"
-dataName<-"baltic&Uts"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
+# Choose stocks to be included
+#stocks<-c(1:13) # Baltic only
+#stocks<-c(1:14) # Baltic & Utsjoki
+stocks<-c(1,14) # Torne & Utsjoki
+#stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
+#stocks<-c(13,14) # Ljungan & Utsjoki : Minimum impact on Utsjoki
+#stocks<-c(1,13,14)
+
+#dataName<-"baltic&Uts"
+dataName<-"Utsjoki"
+
+
+
+# Params for reproduction areas
+EA<-c(
+  8.595,7.865,5.528,5.956,4.448,
+  6.335,7.480,3.435,3.098,5.5013,
+  5.3799,3.003,4.567,
+  5.4816) #Utsjoki
+SA<-c(
+  0.1417,0.1252,0.07537,0.0917,0.1214,
+  0.0941,0.1443,0.22,0.2904,0.12,
+  0.122,0.3414,0.22,
+  0.2822)#Utsjoki
+
+
 data<-list(
-  n=n, CIS=CIS, IS=IS, IP1=IP1, IP2=IP2, IP0=IP0, 
-  IOP1=IOP1,
-  years=41,
-  rivers=14,
-  EA=c(
-    8.595,7.865,5.528,5.956,4.448,
-    6.335,7.480,3.435,3.098,5.5013,
-    5.3799,3.003,4.567,
-    5.4816), #Utsjoki
-  SA=c(
-    0.1417,0.1252,0.07537,0.0917,0.1214,
-    0.0941,0.1443,0.22,0.2904,0.12,
-    0.122,0.3414,0.22,
-    0.2822)#Utsjoki
+  n=n[,stocks], CIS=CIS[,stocks], IS=IS[,stocks], 
+  IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], IOP1=IOP1[,stocks],
+  years=ifelse(length(stocks)==1,1,dim(n[,stocks])[1]),
+  rivers=length(stocks),
+  EA=EA[stocks],SA=SA[stocks]
 )
 
 inits.fn<-function() {
@@ -234,8 +250,8 @@ var_names<-c(
   #"pr","q",
   #"qr",  "aq",
   #"p",  "ap",
-  "A",
-  "TotalS"
+  #"TotalS",
+  "A"
   
 )
 
@@ -256,5 +272,17 @@ t1<-Sys.time();t1
 run1 <- extend.jags(run0, combine=F, sample=1000, thin=10, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-
 run<-run1
+
+
+t1<-Sys.time();t1
+run2 <- extend.jags(run1, combine=F, sample=10000, thin=10, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+
+run<-run2
+
+
+
+chains<-as.mcmc.list(run)
+
