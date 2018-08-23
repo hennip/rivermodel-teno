@@ -192,12 +192,14 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 # Choose stocks to be included
-#stocks<-c(1:13);dataName<-"Baltic" # Baltic only
-stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
-#stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki
+stocks<-c(1:13);dataName<-"Baltic" # Baltic only
+#stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
+#stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
 #stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
-#stocks<-c(13,14) # Ljungan & Utsjoki : Minimum impact on Utsjoki
 #stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
+#stocks<-c(1,3,7,8,9,14); dataName<-"BalticSmolts&Utsjoki"
+#stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&UtsjokiSmolts&Inari"
+stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
 
 
 
@@ -208,12 +210,16 @@ EA<-c(
   8.595,7.865,5.528,5.956,4.448,
   6.335,7.480,3.435,3.098,5.5013,
   5.3799,3.003,4.567,
-  5.4816) #Utsjoki
+  5.4816,#Utsjoki
+  6.230 # Inari
+  ) 
 SA<-c(
   0.1417,0.1252,0.07537,0.0917,0.1214,
   0.0941,0.1443,0.22,0.2904,0.12,
   0.122,0.3414,0.22,
-  0.2822)#Utsjoki
+  0.2822,#Utsjoki
+  0.459 # Inari
+)
 
 
 data<-list(
@@ -248,7 +254,7 @@ var_names<-c(
   "TS",  
   #"pr","q",
   #"qr",  "aq",
-  #"p",  "ap",
+  "p",  #"ap",
   #"TotalS",
   "A"
   
@@ -275,13 +281,19 @@ run<-run1
 
 
 t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=F, sample=10000, thin=10, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=F, sample=3000, thin=30, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 
 run<-run2
 
 
+save(run, file=str_c(pathOut,modelName,"_",dataName,".RData"))
+
+plot(run, var="beta")
+summary(run, var="beta")
 
 chains<-as.mcmc.list(run)
+
+source("04-Output/save-stats.r")
 

@@ -6,15 +6,18 @@ mu_U<-98
 mu_T<-83
 mu_K<-69
 
+mu_Inari<-564.2
+
 cv<-0.5
 Tau<-1/log(cv*cv+1)
 
 M_U<-log(mu_U)-0.5/Tau
 M_T<-log(mu_T)-0.5/Tau
 M_K<-log(mu_K)-0.5/Tau
+M_Inari<-log(mu_Inari)-0.5/Tau
 
 M_U;M_T;M_K;Tau
-
+M_Inari
 
 M_areas<-"
 model{
@@ -22,20 +25,25 @@ model{
 A[1]~dlnorm(M_U,Tau) # Utsjoki
 A[2]~dlnorm(M_T,Tau) # Tsars
 A[3]~dlnorm(M_K,Tau) # Kevo
+A_Inari[1]~dlnorm(M_Inari,Tau) # Inarijoki
 
-Atot[1]<-sum(A[1:3])
+Atot_Utsjoki[1]<-sum(A[1:3])
 
 # check: Torne:
 
-A[4]<-exp(AL)
+A_Torne<-exp(AL)
 AL~dnorm(8.595,Atau)
 Atau<-1/pow(0.1417,2)
 
 # check:Utsjoki total
 
-Atot[2]<-exp(AL_U)
+Atot_Utsjoki[2]<-exp(AL_U)
 AL_U~dnorm(5.4816,1/pow(0.2823,2))
 
+# check: Inarijoki
+
+A_Inari[2]<-exp(AL_I)
+AL_I~dnorm(6.230,1/pow(0.484,2))
 
 
 }"
@@ -46,12 +54,13 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M_areas,file=Mname)
 
 data<-list(
-M_U=M_U, M_T=M_T, M_K=M_K, Tau=Tau
+M_U=M_U, M_T=M_T, M_K=M_K, Tau=Tau,
+M_Inari=M_Inari
 )
 
 
 
-var_names<-c("A","Atot")
+var_names<-c("A","Atot_Utsjoki", "A_Inari", "A_Torne")
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
@@ -67,23 +76,26 @@ difftime(t2,t1)
 
 summary(runX)
 
-#> summary(run0)
-#Lower95     Median  Upper95       Mean        SD Mode      MCerr MC%ofSD SSeff
-#A[1]      25.9828   89.24145  197.955  100.04295  50.54878   NA  1.0386544     2.1  2369
-#A[2]      19.0822   73.78625  164.377   83.11716  42.42440   NA  0.8678067     2.0  2390
-#A[3]      19.3486   61.21320  134.092   67.76992  34.18238   NA  0.7643412     2.2  2000
-#A[4]    3996.9200 5414.79000 7030.170 5471.31143 788.99345   NA 18.1718233     2.3  1885
-#Atot[1]  122.4230  240.91050  395.126  250.93001  73.35104   NA  1.5344139     2.1  2285
-#Atot[2]  140.9390  240.68700  401.373  252.26354  72.29295   NA  1.6451307     2.3  1931
-#          AC.10      psrf
-#A[1]     0.005339159 1.0032051
-#A[2]    -0.030719803 1.0008106
-#A[3]    -0.013301120 1.0036442
-#A[4]     0.041423772 1.0005562
-#Atot[1] -0.030514486 0.9997203
-#Atot[2] -0.006504740 1.0035074
+# > summary(runX)
+#                 Lower95     Median  Upper95       Mean        SD Mode      MCerr MC%ofSD SSeff
+# A[1]              27.5852   88.64395  191.786   97.61487  47.48326   NA  1.0617579     2.2  2000
+# A[2]              20.0549   74.42120  165.327   83.13576  41.00655   NA  0.9435958     2.3  1889
+# A[3]              19.4857   61.17695  144.338   69.96165  36.05425   NA  0.8061975     2.2  2000
+# Atot_Utsjoki[1]  131.9840  240.35100  395.326  250.71228  71.32517   NA  1.5948793     2.2  2000
+# Atot_Utsjoki[2]  126.2700  240.80700  400.724  252.08090  73.09079   NA  1.6343597     2.2  2000
+# A_Inari          133.2270  500.37800 1095.740  556.91499 273.04181   NA  6.1054004     2.2  2000
+# A_Torne         3888.7700 5400.88000 6983.570 5434.23459 791.30886   NA 16.9629061     2.1  2176
+#                     AC.10      psrf
+# A[1]             0.007606038 1.0035862
+# A[2]             0.004350305 0.9997386
+# A[3]             0.028862869 0.9998445
+# Atot_Utsjoki[1]  0.007161290 0.9998555
+# Atot_Utsjoki[2] -0.004951689 1.0042170
+# A_Inari         -0.019451782 1.0026112
+# A_Torne          0.037665442 0.9997480
 
 
+# Utsjoki
 # => EA:
 log(250)-0.5*log(0.288*0.288+1)
 #5.4816
@@ -91,6 +103,19 @@ log(250)-0.5*log(0.288*0.288+1)
 # SA: 
 sqrt(log(0.288*0.288+1))
 #0.2822
+
+#A[r]<-exp(AL[r])
+#AL[r]~dnorm(EA[r],Atau[r])
+#Atau[r]<-1/pow(SA[r],2)
+
+# Inari
+# => EA:
+log(564)-0.5*log(0.484*0.484+1)
+#6.230
+
+# SA: 
+sqrt(log(0.484*0.484+1))
+#0.459
 
 #A[r]<-exp(AL[r])
 #AL[r]~dnorm(EA[r],Atau[r])
