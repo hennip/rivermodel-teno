@@ -10,6 +10,7 @@ library(lubridate)
 library(stringr)
 require(gridExtra)
 
+options(max.print=1000000)
 
 source("00-Functions/tidy-functions.r")
 source("00-Functions/my-palette.r")

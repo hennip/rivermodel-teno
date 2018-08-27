@@ -200,6 +200,7 @@ stocks<-c(1:13);dataName<-"Baltic" # Baltic only
 #stocks<-c(1,3,7,8,9,14); dataName<-"BalticSmolts&Utsjoki"
 #stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&UtsjokiSmolts&Inari"
 stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
+stocks<-c(14,15); dataName<-"Utsjoki&Inari"
 
 
 
@@ -211,14 +212,17 @@ EA<-c(
   6.335,7.480,3.435,3.098,5.5013,
   5.3799,3.003,4.567,
   5.4816,#Utsjoki
-  6.230 # Inari
-  ) 
+ # 6.230 # Inari main stem
+  6.7516 # Inari tot
+
+) 
 SA<-c(
   0.1417,0.1252,0.07537,0.0917,0.1214,
   0.0941,0.1443,0.22,0.2904,0.12,
   0.122,0.3414,0.22,
   0.2822,#Utsjoki
-  0.459 # Inari
+#  0.459 # Inari main stem
+  0.3518 # Inari tot
 )
 
 
@@ -286,6 +290,14 @@ t2<-Sys.time()
 difftime(t2,t1)
 
 run<-run2
+
+
+t1<-Sys.time();t1
+run3 <- extend.jags(run2, combine=F, sample=3000, thin=400, keep.jags.files=T)
+t2<-Sys.time();t2
+difftime(t2,t1)
+
+run<-run3
 
 
 save(run, file=str_c(pathOut,modelName,"_",dataName,".RData"))

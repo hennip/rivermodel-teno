@@ -7,6 +7,12 @@ mu_T<-83
 mu_K<-69
 
 mu_Inari<-564.2
+mu_Karigas<-29.9
+mu_Iskoras<-21.3
+mu_Goss<-260.3
+mu_Kietsi<-19.9
+mu_Inari+mu_Karigas+mu_Iskoras+mu_Goss+mu_Kietsi
+#895.6
 
 cv<-0.5
 Tau<-1/log(cv*cv+1)
@@ -15,19 +21,32 @@ M_U<-log(mu_U)-0.5/Tau
 M_T<-log(mu_T)-0.5/Tau
 M_K<-log(mu_K)-0.5/Tau
 M_Inari<-log(mu_Inari)-0.5/Tau
+M_Karigas<-log(mu_Karigas)-0.5/Tau
+M_Iskoras<-log(mu_Iskoras)-0.5/Tau
+M_Goss<-log(mu_Goss)-0.5/Tau
+M_Kietsi<-log(mu_Kietsi)-0.5/Tau
 
 M_U;M_T;M_K;Tau
-M_Inari
+M_Inari;M_Karigas;M_Iskoras;M_Goss;M_Kietsi
 
 M_areas<-"
 model{
 
-A[1]~dlnorm(M_U,Tau) # Utsjoki
-A[2]~dlnorm(M_T,Tau) # Tsars
-A[3]~dlnorm(M_K,Tau) # Kevo
-A_Inari[1]~dlnorm(M_Inari,Tau) # Inarijoki
+# Utsjoki main stem and tributaries
+A_U[1]~dlnorm(M_U,Tau) # Utsjoki main stem
+A_U[2]~dlnorm(M_T,Tau) # Tsars
+A_U[3]~dlnorm(M_K,Tau) # Kevo
+#A[3]~dlnorm(M_K,Tau) # Kevo
 
-Atot_Utsjoki[1]<-sum(A[1:3])
+# Inarijoki main stem and tributaries
+A_I[1]~dlnorm(M_Inari,Tau) # Inarijoki main stem
+A_I[2]~dlnorm(M_Karigas,Tau) # Karigasjoki
+A_I[3]~dlnorm(M_Iskoras,Tau) # Iskorasjohka
+A_I[4]~dlnorm(M_Goss,Tau) # Gossjohka
+A_I[5]~dlnorm(M_Kietsi,Tau) # Kietsimajoki
+
+Atot_Utsjoki[1]<-sum(A_U[])
+Atot_Inari[1]<-sum(A_I[])
 
 # check: Torne:
 
@@ -42,9 +61,8 @@ AL_U~dnorm(5.4816,1/pow(0.2823,2))
 
 # check: Inarijoki
 
-A_Inari[2]<-exp(AL_I)
-AL_I~dnorm(6.230,1/pow(0.484,2))
-
+Atot_Inari[2]<-exp(AL_I)
+AL_I~dnorm(6.7516,1/pow(0.3518,2))
 
 }"
 
@@ -55,12 +73,17 @@ cat(M_areas,file=Mname)
 
 data<-list(
 M_U=M_U, M_T=M_T, M_K=M_K, Tau=Tau,
-M_Inari=M_Inari
+M_Inari=M_Inari,
+M_Kietsi=M_Kietsi,
+M_Goss=M_Goss,
+M_Iskoras=M_Iskoras,
+M_Karigas=M_Karigas
+
 )
 
 
 
-var_names<-c("A","Atot_Utsjoki", "A_Inari", "A_Torne")
+var_names<-c("Atot_Utsjoki", "Atot_Inari", "A_Torne")
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
@@ -108,7 +131,7 @@ sqrt(log(0.288*0.288+1))
 #AL[r]~dnorm(EA[r],Atau[r])
 #Atau[r]<-1/pow(SA[r],2)
 
-# Inari
+# Inari main stem
 # => EA:
 log(564)-0.5*log(0.484*0.484+1)
 #6.230
@@ -116,6 +139,17 @@ log(564)-0.5*log(0.484*0.484+1)
 # SA: 
 sqrt(log(0.484*0.484+1))
 #0.459
+
+# Inari tot
+# => EA:
+log(910)-0.5*log(0.363*0.363+1)
+#6.752
+
+# SA: 
+sqrt(log(0.363*0.363+1))
+#0.352
+
+
 
 #A[r]<-exp(AL[r])
 #AL[r]~dnorm(EA[r],Atau[r])

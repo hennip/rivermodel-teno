@@ -1,15 +1,16 @@
 
-File<-"H:/Projects/ISAMA/data/orig/TENO SAHKODATA/Teno-Naatamo_vakioalueiden keski- ja koealuekohtaiset tiheydet_CNT1 ver 04-06-2015.xlsx"
+File<-"H:/Projects/ISAMA/data/orig/TENO SAHKODATA/Teno-Naatamo_vakioalueiden keski- ja koealuekohtaiset tiheyskuvat_CNT1 ver 13-12-2017.xlsx"
+#File<-"G:/ex-RKTL/0_HOT/Kalavarat/Tenojoki/TENO-NÄÄTÄMÖ_SÄHKÖDATA/Vakiokoekalastukset/Teno-Näätämö_vakioalueiden keski- ja koealuekohtaiset tiheyskuvat_CNT1 ver 13-12-2017.xlsx"
 Sheet<-"Utsjoki vuosittain, CNT1"
 
-Range<-c("C6:F41","G6:J41","K6:N41","O6:R41","S6:V41",
-         "W6:Z41","AA6:AD41","AE6:AH41","AI6:AL41","AM6:AP41",
-         "AQ6:AT41","AU6:AX41")
+Range<-c("C6:F44","G6:J44","K6:N44","O6:R44","S6:V44",
+         "W6:Z44","AA6:AD44","AE6:AH44","AI6:AL44","AM6:AP44",
+         "AQ6:AT44","AU6:AX44")
 
 dfX<-list()
 for(i in 1:12){
     dfX[[i]]<-read_xlsx(File, sheet=Sheet, na="", range=Range[i],col_names=c("IP0","IP1","IOP1","IP2"))%>% 
-    mutate(year=c(1979:2014),area=i)%>%
+    mutate(year=c(1979:2017),area=i)%>%
     gather("IP0","IP1","IOP1","IP2", key="age", value="density")
     #gather(`0+`,`1+`,`1++`,`2++`, key="age", value="density")
     
