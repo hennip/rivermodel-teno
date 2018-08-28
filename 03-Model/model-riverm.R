@@ -21,7 +21,7 @@ model{
       #S[y,r]~sm.dlnorm(ES[y,r],mu.gammas)	
       S[y,r]~dlnorm(MS[y,r],tauS[y,r])	
       MS[y,r]<-log(ES[y,r])-0.5/tauS[y,r]
-      tauS[y,r]<-1/log(mu.gammas/ES[y,r]+1) # mu.gammas/ES[y,r] =CV^2 <=> mu.gammas = var(x)/ES
+      tauS[y,r]<-1/log(mu.gammas/ES[y,r]+1+0.001) # mu.gammas/ES[y,r] =CV^2 <=> mu.gammas = var(x)/ES
       bs[y,r]<-pow(gammas[r],2)*ES[y,r]							#Distribution of log-smolts
       
       # ES: expected num of smolts on real scale
@@ -192,15 +192,15 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 # Choose stocks to be included
-stocks<-c(1:13);dataName<-"Baltic" # Baltic only
+#stocks<-c(1:13);dataName<-"Baltic" # Baltic only
 #stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
-#stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
+stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
 #stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
 #stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
 #stocks<-c(1,3,7,8,9,14); dataName<-"BalticSmolts&Utsjoki"
 #stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&UtsjokiSmolts&Inari"
-stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
-stocks<-c(14,15); dataName<-"Utsjoki&Inari"
+#stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
+#stocks<-c(14,15); dataName<-"Utsjoki&Inari"
 
 
 
