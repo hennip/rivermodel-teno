@@ -36,8 +36,6 @@ model{
       EP2[y,r]<-betap[r]*(q[1,r]*P1[y-1,r]+q[2,r]*P1[y-2,r]+q[3,r]*P1[y-3,r])
       
       # 2+ parr measurement (number of parr over all study areas)
-      #x~sm.dnegbin(mu,k) <=> x~dnegbin(1/k+1, mu/k)
-      #IP2[y,r]~sm.dnegbin(EIP2[y,r],bip2[y,r])
       IP2[y,r]~dnegbin(1/(bip2[y,r]+1),EIP2[y,r]/bip2[y,r]) 
       EIP2[y,r]<-n[y,r]*5*P2[y,r] # EIP2: expected total number
       bip2[y,r]<-EIP2[y,r]*pow(CV[r],2)/n[y,r]
@@ -74,10 +72,6 @@ model{
       bip0[y,r]<-EIP0[y,r]*pow(CV[r],2)/n[y,r]
     }
     
-    #Groups: if rivers are added, sum those into correct groups!
-  #  TotalS[y,1]<-sum(S[y,1:4])
-  #  TotalS[y,2]<-sum(S[y,5:11])
-  #  TotalS[y,3]<-S[y,12]
   }
   
   for(y in 1:4){
@@ -95,35 +89,17 @@ model{
     AL[r]~dnorm(EA[r],Atau[r])
     Atau[r]<-1/pow(SA[r],2)
     
-    #c1.beta[r]<-pow(c.beta,2)*mu.alpha[r]
-
-    #std.AL[r]<-(AL[r]-mean.AL)/sqrt((1/(rivers-1)*sumx2.AL))
-    #x2.AL[r]<-pow(mean.AL-AL[r],2)
-    
     # alpha: survival from 0+ to 1+
-
-    # from 2010 version main.r
     alpha[r]~dlnorm(M.alpha[r],T.alpha)
     M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
 
-    # from BUGS
-    #alpha[r]~dlnorm(a.alpha+b.alpha*std.AL[r]-0.5/T.alpha[r],T.alpha[r])
-    #T.alpha[r]<-1/log(c1.beta[r]/mu.alpha[r]+1)
-
     # betas: survival to smolt stage
-    
-    # from 2010 version main.r
     betas[r]~dlnorm(M.betas[r],T.alpha)
     M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
-
-    # from BUGS
-    #betas[r]~dlnorm(a.betas+b.betas*std.AL[r]-0.5/T.betas[r],T.betas[r])
-    #T.betas[r]<-1/log(pow(c.beta,2)+1)
 
     betap[r]~dlnorm(M.betap,T.betap)
     
     CV[r]~dlnorm(M.CV,T.CV)
-    
    
     gammap[r]~dlnorm(M.gammap,T.gammap)
     gammap2[r]~dlnorm(M.gammap2,T.gammap2)
@@ -147,9 +123,7 @@ model{
   for(i in 1:3){
     aq[i]~dgamma(1,3)
   }
-  
-  #mean.AL<-1/rivers*sum(AL[])
-  #sumx2.AL<-sum(x2.AL[])
+
   
   mu.betap~dunif(0,100)
   M.betap<-log(mu.betap)-0.5/T.betap
@@ -286,7 +260,7 @@ run0 <- run.jags(M1,
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-
+            
 t1<-Sys.time();t1
 run1 <- extend.jags(run0, combine=F, sample=1000, thin=10, keep.jags.files=T)
 t2<-Sys.time()
