@@ -95,7 +95,7 @@ model{
     AL[r]~dnorm(EA[r],Atau[r])
     Atau[r]<-1/pow(SA[r],2)
     
-    c1.beta[r]<-pow(c.beta,2)*mu.alpha[r]
+    #c1.beta[r]<-pow(c.beta,2)*mu.alpha[r]
 
     #std.AL[r]<-(AL[r]-mean.AL)/sqrt((1/(rivers-1)*sumx2.AL))
     #x2.AL[r]<-pow(mean.AL-AL[r],2)
@@ -103,9 +103,8 @@ model{
     # alpha: survival from 0+ to 1+
 
     # from 2010 version main.r
-    alpha[r]~dlnorm(Malpha[r],Talpha)
-    Malpha[r]<-aalpha+balpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/Talpha
-    Talpha<-1/log(cbeta*cbeta+1)
+    alpha[r]~dlnorm(M.alpha[r],T.alpha)
+    M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
 
     # from BUGS
     #alpha[r]~dlnorm(a.alpha+b.alpha*std.AL[r]-0.5/T.alpha[r],T.alpha[r])
@@ -114,8 +113,8 @@ model{
     # betas: survival to smolt stage
     
     # from 2010 version main.r
-    betas[r]~dlnorm(Mbetas[r],Talpha)
-    Mbetas[r]<-abetas+bbetas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/Talpha
+    betas[r]~dlnorm(M.betas[r],T.alpha)
+    M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
 
     # from BUGS
     #betas[r]~dlnorm(a.betas+b.betas*std.AL[r]-0.5/T.betas[r],T.betas[r])
@@ -166,8 +165,8 @@ model{
   T.gammap2<-1/log(c2.gamma/mu.gammap2+1)
   T.gammas<-1/log(c3.gamma/mu.gammas+1)
   
-  Talpha<-1/log(cbeta*cbeta+1)
-  cbeta~dunif(0.01,2) # prev. c.beta
+  T.alpha<-1/log(c.beta*c.beta+1)
+  c.beta~dunif(0.01,2) 
   mu.CV~dlnorm(-2.3,0.22) # sm.dlnorm(1,100)
   
   C.CV~dlnorm(0,0.001)I(0.01,10) # C.CV =var/mu
@@ -197,7 +196,7 @@ model{
   
 }"
 
-modelName<-"rivermodel"
+modelName<-"rivermodelTeno"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -205,9 +204,9 @@ cat(M1,file=Mname)
 # Choose stocks to be included
 #stocks<-c(1:13);dataName<-"Baltic" # Baltic only
 #stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
-stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
+#stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
 #stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
-#stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
+stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
 #stocks<-c(1,3,7,8,9,14); dataName<-"BalticSmolts&Utsjoki"
 #stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&UtsjokiSmolts&Inari"
 #stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
@@ -259,7 +258,7 @@ var_names<-c(
   "betas",  "c.beta",
   "betap",  "mu.betap", "c2.beta",
   "a.betas",  "b.betas",
-  "alpha",  "mu.alpha", "c1.beta",
+  "alpha", # "mu.alpha",
   "c.gamma",
   "gammas",  "mu.gammas",  "c3.gamma",
   "gammap",  "mu.gammap", "c1.gamma",
