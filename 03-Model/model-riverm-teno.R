@@ -97,6 +97,7 @@ model{
     betas[r]~dlnorm(M.betas[r],T.alpha)
     M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
 
+    # betap: survival of >1+ parr
     betap[r]~dlnorm(M.betap,T.betap)
     
     CV[r]~dlnorm(M.CV,T.CV)
@@ -180,11 +181,11 @@ cat(M1,file=Mname)
 #stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
 #stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
 #stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
-stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
+#stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
 #stocks<-c(1,3,7,8,9,14); dataName<-"BalticSmolts&Utsjoki"
 #stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&UtsjokiSmolts&Inari"
 #stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
-#stocks<-c(14,15); dataName<-"Utsjoki&Inari"
+stocks<-c(14,15); dataName<-"Utsjoki&Inari"
 
 
 
@@ -286,6 +287,8 @@ run<-run3
 
 save(run, file=str_c(pathOut,modelName,"_",dataName,".RData"))
 
+plot(run, var="S[24,2]")
+summary(run, var="S[24,2]")
 plot(run, var="beta")
 summary(run, var="beta")
 

@@ -1,21 +1,21 @@
-require(rjags)
-bx<-function(v,first,last,nt,b,name1,name2,...){
-beg<-1+b
-end<-(last-first+1)*nt+b
-c<-matrix(c(beg:end),nrow=1,ncol=end-beg+1)
-z<-boxplot(c,plot=FALSE)
-
-for(i in beg:end){
-var<-paste(name1,i,name2,sep="")
-z$stats[,i-beg+1]<-quantile(v[,var],p=c(0.025,0.25,0.5,0.75,0.975))
-}
-#z$names=beg:end
-bxp(z,ylim=c(0,1.2*max(z$stats)),axes=FALSE,...)
-axis(2)
-axis(1,at=seq(from=beg-b,to=end-b,by=nt),lab=first:last)
-box()
-points(z$stats[3,],type="l")
-}
+# require(rjags)
+# bx<-function(v,first,last,nt,b,name1,name2,...){
+# beg<-1+b
+# end<-(last-first+1)*nt+b
+# c<-matrix(c(beg:end),nrow=1,ncol=end-beg+1)
+# z<-boxplot(c,plot=FALSE)
+# 
+# for(i in beg:end){
+# var<-paste(name1,i,name2,sep="")
+# z$stats[,i-beg+1]<-quantile(v[,var],p=c(0.025,0.25,0.5,0.75,0.975))
+# }
+# #z$names=beg:end
+# bxp(z,ylim=c(0,1.2*max(z$stats)),axes=FALSE,...)
+# axis(2)
+# axis(1,at=seq(from=beg-b,to=end-b,by=nt),lab=first:last)
+# box()
+# points(z$stats[3,],type="l")
+# }
 
 model<-"
 model{
