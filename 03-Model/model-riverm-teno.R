@@ -177,15 +177,15 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 # Choose stocks to be included
-#stocks<-c(1:13);dataName<-"Baltic" # Baltic only
-#stocks<-c(1:14); dataName<-"Baltic&Utsjoki" # Baltic & Utsjoki
-#stocks<-c(1,14); dataName<-"Torne&Utsjoki"# Torne & Utsjoki : ei pyöri!
-#stocks<-14 # Utsjoki only :: NOTE!! Model does not work easily with only one stock!
-#stocks<-c(1,3,14); dataName<-"Torne&Simo&Utsjoki"
-#stocks<-c(1,3,7,8,9,14); dataName<-"BalticSmolts&Utsjoki"
-#stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&UtsjokiSmolts&Inari"
-#stocks<-c(1,3,7,8,9,14,15); dataName<-"BSmolts&Utsjoki&Inari"
-stocks<-c(14,15); dataName<-"Utsjoki&Inari"
+#stocks<-c(1:4);dataName<-"Teno4"
+stocks<-c(1:5);dataName<-"Teno4&Torne"
+
+#stocks:
+# 1: Teno main stem (vakiot)
+# 2: Utsjoki (vakiot)
+# 3: Inarijoki (vakiot)
+# 4: Pulmanki
+# (5: Tornionjoki)
 
 
 
@@ -193,21 +193,18 @@ stocks<-c(14,15); dataName<-"Utsjoki&Inari"
 
 # Params for reproduction areas
 EA<-c(
-  8.595,7.865,5.528,5.956,4.448,
-  6.335,7.480,3.435,3.098,5.5013,
-  5.3799,3.003,4.567,
   5.4816,#Utsjoki
- # 6.230 # Inari main stem
-  6.7516 # Inari tot
-
+  6.7516, # Inari tot
+  5.4816,#Utsjoki
+  6.7516, # Inari tot
+  8.595# Torne
 ) 
 SA<-c(
-  0.1417,0.1252,0.07537,0.0917,0.1214,
-  0.0941,0.1443,0.22,0.2904,0.12,
-  0.122,0.3414,0.22,
   0.2822,#Utsjoki
-#  0.459 # Inari main stem
-  0.3518 # Inari tot
+  0.3518, # Inari tot
+  0.2822,#Utsjoki
+  0.3518, # Inari tot
+  0.1417 # Torne
 )
 
 

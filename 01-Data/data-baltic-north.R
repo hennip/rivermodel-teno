@@ -24,7 +24,7 @@ dfB[[2]]
 
 full_join(dfB[[1]], dfB[[2]], by=NULL)
 
-df<-full_join(dfB[[1]], dfB[[2]], by=NULL)%>%
+dfX<-full_join(dfB[[1]], dfB[[2]], by=NULL)%>%
   full_join(dfB[[3]], by=NULL)%>%
   full_join(dfB[[4]], by=NULL)%>%
   full_join(dfB[[5]], by=NULL)%>%
@@ -39,7 +39,7 @@ df<-full_join(dfB[[1]], dfB[[2]], by=NULL)%>%
 
 #View(df) 
 
-dfB<-df
+dfB<-dfX
 
 
 

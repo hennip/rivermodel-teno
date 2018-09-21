@@ -2,9 +2,11 @@
 # combine priors for the size of production areas at Ustjoki, Tsars & Kevo
 
 # point estimates for the size of prod areas (in hectares) based on NINA report
+mu_TMS<-2052.5 # Teno main stem
+
 mu_U<-98
-mu_T<-83
-mu_K<-69
+mu_Tsars<-83
+mu_Kevo<-69
 
 mu_Inari<-564.2
 mu_Karigas<-29.9
@@ -17,26 +19,30 @@ mu_Inari+mu_Karigas+mu_Iskoras+mu_Goss+mu_Kietsi
 cv<-0.5
 Tau<-1/log(cv*cv+1)
 
+M_TMS<-log(mu_TMS)-0.5/Tau
 M_U<-log(mu_U)-0.5/Tau
-M_T<-log(mu_T)-0.5/Tau
-M_K<-log(mu_K)-0.5/Tau
+M_Tsars<-log(mu_Tsars)-0.5/Tau
+M_Kevo<-log(mu_Kevo)-0.5/Tau
 M_Inari<-log(mu_Inari)-0.5/Tau
 M_Karigas<-log(mu_Karigas)-0.5/Tau
 M_Iskoras<-log(mu_Iskoras)-0.5/Tau
 M_Goss<-log(mu_Goss)-0.5/Tau
 M_Kietsi<-log(mu_Kietsi)-0.5/Tau
 
-M_U;M_T;M_K;Tau
+M_TMS;M_U;M_Tsars;M_Kevo;Tau
 M_Inari;M_Karigas;M_Iskoras;M_Goss;M_Kietsi
 
 M_areas<-"
 model{
 
+#Teno main stem
+A_TMS~dlnorm(M_TMS,Tau)
+
 # Utsjoki main stem and tributaries
 A_U[1]~dlnorm(M_U,Tau) # Utsjoki main stem
-A_U[2]~dlnorm(M_T,Tau) # Tsars
-A_U[3]~dlnorm(M_K,Tau) # Kevo
-#A[3]~dlnorm(M_K,Tau) # Kevo
+A_U[2]~dlnorm(M_Tsars,Tau) # Tsars
+A_U[3]~dlnorm(M_Kevo,Tau) # Kevo
+#A[3]~dlnorm(M_Kevo,Tau) # Kevo
 
 # Inarijoki main stem and tributaries
 A_I[1]~dlnorm(M_Inari,Tau) # Inarijoki main stem
@@ -72,7 +78,8 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M_areas,file=Mname)
 
 data<-list(
-M_U=M_U, M_T=M_T, M_K=M_K, Tau=Tau,
+M_TMS=M_TMS,
+M_U=M_U, M_Tsars=M_Tsars, M_Kevo=M_Kevo, Tau=Tau,
 M_Inari=M_Inari,
 M_Kietsi=M_Kietsi,
 M_Goss=M_Goss,
@@ -83,7 +90,7 @@ M_Karigas=M_Karigas
 
 
 
-var_names<-c("Atot_Utsjoki", "Atot_Inari", "A_Torne")
+var_names<-c("A_TMS","Atot_Utsjoki", "Atot_Inari", "A_Torne")
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!

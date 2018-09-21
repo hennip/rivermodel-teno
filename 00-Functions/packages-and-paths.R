@@ -25,5 +25,7 @@ pathOut<-"H:/Projects/ISAMA/prg/output/rivermodel-teno/"
 source("01-Data/data-baltic-north.r")
 source("01-Data/data-Utsjoki.r")
 source("01-Data/data-Inari.r")
+source("01-Data/data-TenoMS.r")
+source("01-Data/data-teno-tributaries.r")
 source("01-Data/data-combine.r")
 

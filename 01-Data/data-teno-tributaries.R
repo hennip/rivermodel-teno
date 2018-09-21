@@ -8,6 +8,7 @@
 
 
 
+# Tributary data from 2000 and onwards
 
 File<-"H:/Projects/ISAMA/data/orig/TENO SAHKODATA/Sivujoki 2000-luku originaalidata 250315.xlsx"
 # Original location: G:\ex-RKTL\0_HOT\Kalavarat\Tenojoki\TENO-NÄÄTÄMÖ_SÄHKÖDATA\Sivujoet
@@ -18,10 +19,6 @@ df<-read_xlsx(File, na="",
 df<-df%>%select(river, place, chdate, ala, maxk, k, species, age)%>%
   mutate(year=year(chdate),month=month(chdate),day=day(chdate))%>%
   filter(species==1)
-
-# Cannot recode P1 etc. areas since are at the same rivers as the ones given with numeric values 
-#df%>%mutate(alue=factor(place))%>%
-#  mutate(alue2=fct_recode(alue,"1"="P1"))
 
 df2<-df%>%group_by(river, year, place)%>%
   summarise(`0+`=sum(age==0),`1+`=sum(age==1),
@@ -35,42 +32,19 @@ df2<-df2%>%select(river,year, place, acre, IP0, IP1, IP2, IOP1)%>%
   summarise(IP0=mean(IP0), IP1=mean(IP1), IOP1=mean(IOP1), IP2=mean(IP2), area=mean(acre), n=n())%>%
   filter(n>1)
 
+#View(df2)
 
-View(df2)
+# Pulmanki, Tsars, Kevo, Akujoki, Karasjoki, Iesjoki
+df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02" | river=="01.07"
+                  | river=="03" | river=="03.01")
 
+# Pulmanki only
+df3<-df2%>%filter(river=="01.01")%>%
+  ungroup()
 
-# Tsarsjoki
+#View(df3)
 
-tsars<-df%>%filter(river=="01.03.01", species==1)#%>%
-#  mutate(place=parse_integer(place))
-
-# Obs! individuals without age identification are not summed (there are some that do have length identification but not age)
-tsars<-tsars%>%group_by(year, place)%>%
-  summarise(`0+`=sum(age==0, na.rm=T),`1+`=sum(age==1, na.rm=T),
-            `1++`=sum(age>0, na.rm=T),`2++`=sum(age>1, na.rm=T),
-            acre=mean(ala)/100)%>%
-  mutate(IP0=`0+`/acre, IP1=`1+`/acre,
-         IOP1=`1++`/acre, IP2=`2++`/acre)
-
-tsars%>%select(year, place, acre, IP0, IP1, IP2, IOP1)%>%
-  group_by(year)%>%
-  summarise(IP0=mean(IP0), IP1=mean(IP1), IOP1=mean(IOP1), IP2=mean(IP2), area=mean(acre), n=n())
-
-View(tsars)
-
-# Kevojoki
-
-kevo<-df%>%filter(river=="01.03.02", species==1)%>%
-  mutate(place=parse_integer(place))
-
-kevo<-kevo%>%group_by(year, place)%>%
-  summarise(`0+`=sum(age==0),`1+`=sum(age==1),
-            `1++`=sum(age>0),`2++`=sum(age>1),
-            acre=mean(ala)/100)%>%
-  mutate(IP0=`0+`/acre, IP1=`1+`/acre,
-         IOP1=`1++`/acre, IP2=`2++`/acre)
-
-kevo%>%select(year, place, acre, IP0, IP1, IP2, IOP1)%>%
-  group_by(year)%>%
-  summarise(IP0=mean(IP0), IP1=mean(IP1), IOP1=mean(IOP1), IP2=mean(IP2), area=mean(acre), n=n())
+df_trib<-df3%>%select(-IOP1)%>%
+  select(-river)%>%
+  mutate(stock=4)
 
