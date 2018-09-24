@@ -40,7 +40,7 @@ dens2<-select(dens, -n_juveniles)%>%
 
 dfU<-select(dens, -ave_density)%>%
   spread(key=age, value=n_juveniles)%>%
-  mutate(stock=2)%>%
+  mutate(stock=3)%>%
   select(-IOP1) # leave IOP1 out so the same data is not added twice
 
 

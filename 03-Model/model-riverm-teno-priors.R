@@ -11,20 +11,7 @@ M1<-"
 model{
   for(y in 5:years){
 
-    # ES: expected num of smolts on real scale in all stock systems (2: Utsjoki tot!)
-    ES[y,1]<-betas[1]*(p[1,1]*P2[y-1,1]+p[2,1]*P1[y-1,1])*A[1]/100  #Teno MS
-    ES[y,2]<-betas[2]*(p[1,2]*P2[y-1,2]+p[2,2]*P1[y-1,2])*A[2]/100  #Pulmanki
-    ES[y,3]<- # Utsjoki tot
-            betas[3]*((p[1,3]*P2[y-1,3]+p[2,3]*P1[y-1,3])*A[3]/100+ #Utsjoki main
-                       (p[1,4]*P2[y-1,4]+p[2,4]*P1[y-1,4])*A[4]/100+ #Tsars
-                       (p[1,5]*P2[y-1,5]+p[2,5]*P1[y-1,5])*A[5]/100) #Kevo
-    ES[y,4]<-betas[4]*(p[1,4]*P2[y-1,4]+p[2,4]*P1[y-1,4])*A[4]/100  #Tsars
-    ES[y,5]<-betas[5]*(p[1,5]*P2[y-1,5]+p[2,5]*P1[y-1,5])*A[5]/100  #Kevo
-    ES[y,6]<-betas[6]*(p[1,6]*P2[y-1,6]+p[2,6]*P1[y-1,6])*A[6]/100  #Inari
-    ES[y,7]<-betas[7]*(p[1,7]*P2[y-1,7]+p[2,7]*P1[y-1,7])*A[7]/100  #Torne
-
-
-    for(r in 1:rivers){ # Stock systems with smolt measurement (2: Utsjoki tot!)
+    for(r in 1:rivers){
     
       #smolt measurements on log scale
       IS[y,r]~dnorm(LS[y,r],Tau[y,r])		
@@ -35,19 +22,16 @@ model{
       #S[y,r]~sm.dlnorm(ES[y,r],mu.gammas)	
       S[y,r]~dlnorm(MS[y,r],tauS[y,r])	
       MS[y,r]<-log(ES[y,r])-0.5/tauS[y,r]
-      tauS[y,r]<-1/log(mu.gammas/ES[y,r]+1+0.001) # mu.gammas/ES[y,r] =CV^2 <=> mu.gammas = var(x)/ES
+      tauS[y,r]<-1000#1/log(mu.gammas/ES[y,r]+1+0.001) # mu.gammas/ES[y,r] =CV^2 <=> mu.gammas = var(x)/ES
       bs[y,r]<-pow(gammas[r],2)*ES[y,r]							#Distribution of log-smolts
       
- #     # ES: expected num of smolts on real scale
- #     ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100  # mikä 100?
-    }
-
-    for(r in 1:rivers){ # sub-populations separately (2: Utsjoki main!)
+     # ES: expected num of smolts on real scale
+     ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100  # mikä 100?
       
       # 2+ parr abundance  relative density!
       P2[y,r]~dlnorm(MP2[y,r],tauP2[y,r])
       MP2[y,r]<-log(EP2[y,r])-0.5/tauP2[y,r]
-      tauP2[y,r]<-1/log(mu.gammap2/EP2[y,r]+1)
+      tauP2[y,r]<-1000#1/log(mu.gammap2/EP2[y,r]+1)
       
       bp2[y,r]<-pow(gammap2[r],2)*EP2[y,r]
       EP2[y,r]<-betap[r]*(q[1,r]*P1[y-1,r]+q[2,r]*P1[y-2,r]+q[3,r]*P1[y-3,r])
@@ -61,7 +45,7 @@ model{
       # 1+ parr abundance
       P1[y,r]~dlnorm(MP1[y,r],tauP1[y,r])
       MP1[y,r]<-log(EP1[y,r])-0.5/tauP1[y,r]
-      tauP1[y,r]<-1/log(mu.gammap/EP1[y,r]+1)
+      tauP1[y,r]<-1000#1/log(mu.gammap/EP1[y,r]+1)
       
       EP1[y,r]<-P0[y-1,r]*alpha[r]
       bp1[y,r]<-pow(gammap[r],2)*EP1[y,r]
@@ -115,7 +99,7 @@ model{
     M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
 
     # betap: survival of >1+ parr
-    betap[r]~dlnorm(log(mu.betap)-0.5/T.betap,T.betap)
+    betap[r]~dlnorm(M.betap,T.betap)
     
     CV[r]~dlnorm(M.CV,T.CV)
    
@@ -142,8 +126,10 @@ model{
     aq[i]~dgamma(1,3)
   }
 
+  
   mu.betap~dunif(0,100)
-
+  M.betap<-log(mu.betap)-0.5/T.betap
+  
   mu.gammas~dunif(0.01,10)
   mu.gammap~dunif(0.01,10)
   mu.gammap2~dunif(0.01,10)
@@ -183,53 +169,46 @@ model{
   
 }"
 
-modelName<-"rivermodelTeno"
+modelName<-"rivermodelTenoPriors"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 # Choose stocks to be included
 #stocks<-c(1:4);dataName<-"Teno4"
-stocks<-c(1:7);dataName<-"Teno6&Torne"
+stocks<-c(1:5);dataName<-"Teno4&Torne"
 
 #stocks:
-# 1: Teno main stem
-# 2: Pulmanki
-# 3: Utsjoki main (pinta-ala, parrit) / tot (smoltit)
-# 4: Tsars
-# 5: Kevo
-# 6: Inarijoki (vakiot)
-# (7: Tornionjoki)
+# 1: Teno main stem (vakiot)
+# 2: Utsjoki (vakiot)
+# 3: Inarijoki (vakiot)
+# 4: Pulmanki
+# (5: Tornionjoki)
+
+
+
 
 
 # Params for reproduction areas
 EA<-c(
-  7.533, #1: TMS
-  3.9106, # 2: Pulmanki
-  4.4694, # 3: Utsjoki main
-  4.3032, # Tsars
-  4.1185, # Kevo
- # 5.4816, #Utsjoki tot
+  5.4816,#Utsjoki
+  6.7516, # Inari tot
+  5.4816,#Utsjoki
   6.7516, # Inari tot
   8.595# Torne
 ) 
-
 SA<-c(
-  0.482, #TMS
-  0.4678,# Pulmanki
-  0.4808, # Utsjoki main
-  0.4808, # Tsars
-  0.4808, # Kevo
-  #0.2822, #Utsjoki tot
+  0.2822,#Utsjoki
+  0.3518, # Inari tot
+  0.2822,#Utsjoki
   0.3518, # Inari tot
   0.1417 # Torne
-
 )
 
 
 data<-list(
-  n=n[,stocks], CIS=CIS[,stocks], IS=IS[,stocks], 
-  IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], IOP1=IOP1[,stocks],
+  n=n[,stocks], CIS=CIS[,stocks], #IS=IS[,stocks], 
+  #IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], IOP1=IOP1[,stocks],
   years=ifelse(length(stocks)==1,1,dim(n[,stocks])[1]),
   rivers=length(stocks),
   EA=EA[stocks],SA=SA[stocks]
@@ -271,7 +250,8 @@ var_names<-c(
 
 t1<-Sys.time();t1
 run0 <- run.jags(M1, 
-                 data=data,monitor=var_names, inits=NA,
+                 data=data,
+                 monitor=var_names, inits=NA,
                  n.chains = 2, method = 'parallel', thin=1, burnin =0, 
                  modules = "mix",keep.jags.files=T,sample =1000, adapt = 1000, 
                  progress.bar=TRUE)

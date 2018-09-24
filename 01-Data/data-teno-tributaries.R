@@ -38,13 +38,11 @@ df2<-df2%>%select(river,year, place, acre, IP0, IP1, IP2, IOP1)%>%
 df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02" | river=="01.07"
                   | river=="03" | river=="03.01")
 
-# Pulmanki only
-df3<-df2%>%filter(river=="01.01")%>%
-  ungroup()
-
-#View(df3)
+# Pulmanki, Tsars, Kevo
+df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02")%>%
+  ungroup()%>%
+  mutate(stock=ifelse(river=="01.01", 2, ifelse(river=="01.03.01", 4, ifelse(river=="01.03.02", 5,river))))
 
 df_trib<-df3%>%select(-IOP1)%>%
   select(-river)%>%
-  mutate(stock=4)
-
+  mutate(stock=parse_double(stock))
