@@ -288,7 +288,7 @@ run<-run1
 t1<-Sys.time();t1
 run2 <- extend.jags(run1, combine=F, sample=3000, thin=30, keep.jags.files=T)
 t2<-Sys.time()
-difftime(t2,t1)
+difftime(t2,t1) #10min
 
 run<-run2
 
@@ -296,9 +296,17 @@ run<-run2
 t1<-Sys.time();t1
 run3 <- extend.jags(run2, combine=F, sample=3000, thin=400, keep.jags.files=T)
 t2<-Sys.time();t2
-difftime(t2,t1)
+difftime(t2,t1) #2.3h
 
 run<-run3
+
+
+t1<-Sys.time();t1
+run4 <- extend.jags(run3, combine=F, sample=3000, thin=1000, keep.jags.files=T)
+t2<-Sys.time();t2
+difftime(t2,t1) #5.7h
+
+run<-run4
 
 
 save(run, file=str_c(pathOut,modelName,"_",dataName,".RData"))
