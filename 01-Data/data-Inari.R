@@ -35,7 +35,8 @@ dens2<-select(dens, -n_juveniles)%>%
 
 df_Inari<-select(dens, -ave_density)%>%
   spread(key=age, value=n_juveniles)%>%
-  mutate(stock=6)%>%
+  #mutate(stock=6)%>%
+  mutate(rivername="Inari")%>%
   select(-IOP1) # leave IOP1 out so the same data is not added twice
 
 

@@ -4,47 +4,43 @@
 
 
 
-
+stocksys<-c(1,2,3,3,3,6,7,3)
 
 M1<-"
 
 model{
   for(y in 5:years){
 
-    # ES: expected num of smolts on real scale in all stock systems (2: Utsjoki tot!)
-    ES[y,1]<-betas[1]*(p[1,1]*P2[y-1,1]+p[2,1]*P1[y-1,1])*A[1]/100  #Teno MS
-    ES[y,2]<-betas[2]*(p[1,2]*P2[y-1,2]+p[2,2]*P1[y-1,2])*A[2]/100  #Pulmanki
-    ES[y,3]<- # Utsjoki tot
-            betas[3]*((p[1,3]*P2[y-1,3]+p[2,3]*P1[y-1,3])*A[3]/100+ #Utsjoki main
-                       (p[1,4]*P2[y-1,4]+p[2,4]*P1[y-1,4])*A[4]/100+ #Tsars
-                       (p[1,5]*P2[y-1,5]+p[2,5]*P1[y-1,5])*A[5]/100) #Kevo
-    ES[y,4]<-betas[4]*(p[1,4]*P2[y-1,4]+p[2,4]*P1[y-1,4])*A[4]/100  #Tsars
-    ES[y,5]<-betas[5]*(p[1,5]*P2[y-1,5]+p[2,5]*P1[y-1,5])*A[5]/100  #Kevo
-    ES[y,6]<-betas[6]*(p[1,6]*P2[y-1,6]+p[2,6]*P1[y-1,6])*A[6]/100  #Inari
-    ES[y,7]<-betas[7]*(p[1,7]*P2[y-1,7]+p[2,7]*P1[y-1,7])*A[7]/100  #Torne
+    # ES: expected num of smolts on real scale in all stock systems
+    for(r in 1:rivers){
+      ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100
+    }
+#    ES[y,1]<-betas[1]*(p[1,1]*P2[y-1,1]+p[2,1]*P1[y-1,1])*A[1]/100  #Teno MS
+#    ES[y,2]<-betas[2]*(p[1,2]*P2[y-1,2]+p[2,2]*P1[y-1,2])*A[2]/100  #Pulmanki
+#    ES[y,3]<-betas[3]*(p[1,3]*P2[y-1,3]+p[2,3]*P1[y-1,3])*A[3]/100  #Utsjoki main
+#    ES[y,4]<-betas[4]*(p[1,4]*P2[y-1,4]+p[2,4]*P1[y-1,4])*A[4]/100  #Tsars
+#    ES[y,5]<-betas[5]*(p[1,5]*P2[y-1,5]+p[2,5]*P1[y-1,5])*A[5]/100  #Kevo
+#    ES[y,6]<-betas[6]*(p[1,6]*P2[y-1,6]+p[2,6]*P1[y-1,6])*A[6]/100  #Inari
+#    ES[y,7]<-betas[7]*(p[1,7]*P2[y-1,7]+p[2,7]*P1[y-1,7])*A[7]/100  #Torne
+    ES[y,8]<-sum(ES[y,3:5])                                         # Utsjoki tot
+            
 
+    for(r in 1:(rivers+1)){ # Individual stocks & stock systems
 
-    for(r in 1:rivers){ # Stock systems with smolt measurement (2: Utsjoki tot!)
-    
       #smolt measurements on log scale
       IS[y,r]~dnorm(LS[y,r],Tau[y,r])		
       LS[y,r]<-log(S[y,r])
       Tau[y,r]<-1/log(pow(CIS[y,r],2)+1)							#Distribution of smolt measurement
       
       #smolt abundance
-      #S[y,r]~sm.dlnorm(ES[y,r],mu.gammas)	
       S[y,r]~dlnorm(MS[y,r],tauS[y,r])	
       MS[y,r]<-log(ES[y,r])-0.5/tauS[y,r]
       tauS[y,r]<-1/log(mu.gammas/ES[y,r]+1+0.001) # mu.gammas/ES[y,r] =CV^2 <=> mu.gammas = var(x)/ES
-      bs[y,r]<-pow(gammas[r],2)*ES[y,r]							#Distribution of log-smolts
-      
- #     # ES: expected num of smolts on real scale
- #     ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100  # mikä 100?
     }
 
     for(r in 1:rivers){ # sub-populations separately (2: Utsjoki main!)
       
-      # 2+ parr abundance  relative density!
+      # >=2+ parr abundance  relative density!
       P2[y,r]~dlnorm(MP2[y,r],tauP2[y,r])
       MP2[y,r]<-log(EP2[y,r])-0.5/tauP2[y,r]
       tauP2[y,r]<-1/log(mu.gammap2/EP2[y,r]+1)
@@ -52,9 +48,9 @@ model{
       bp2[y,r]<-pow(gammap2[r],2)*EP2[y,r]
       EP2[y,r]<-betap[r]*(q[1,r]*P1[y-1,r]+q[2,r]*P1[y-2,r]+q[3,r]*P1[y-3,r])
       
-      # 2+ parr measurement (number of parr over all study areas)
+      # >=2+ parr measurement (number of parr over all study areas)
       IP2[y,r]~dnegbin(1/(bip2[y,r]+1),EIP2[y,r]/bip2[y,r]) 
-      EIP2[y,r]<-n[y,r]*5*P2[y,r] # EIP2: expected total number
+      EIP2[y,r]<-n[y,r]*1*P2[y,r] # EIP2: expected total number
       bip2[y,r]<-EIP2[y,r]*pow(CV[r],2)/n[y,r]
       CIP[y,r]<-1/sqrt(n[y,r])
       
@@ -68,24 +64,23 @@ model{
       
       # 1+ parr measurement
       IP1[y,r]~dnegbin(1/(bip1[y,r]+1),EIP1[y,r]/bip1[y,r]) 
-      EIP1[y,r]<-n[y,r]*5*P1[y,r]
+      EIP1[y,r]<-n[y,r]*1*P1[y,r]
       bip1[y,r]<-EIP1[y,r]/n[y,r]
       
       # >1+ parr abundance
       OP1[y,r]<-P1[y,r]+P2[y,r]
       
       # >1+ parr measurement
-      IOP1[y,r]~dnegbin(1/(biop1[y,r]+1),EIOP1[y,r]/biop1[y,r]) 
-      
-      EIOP1[y,r]<-n[y,r]*5*OP1[y,r]
-      biop1[y,r]<-EIOP1[y,r]*pow(CV[r],2)/n[y,r]
+  #    IOP1[y,r]~dnegbin(1/(biop1[y,r]+1),EIOP1[y,r]/biop1[y,r]) 
+  #    EIOP1[y,r]<-n[y,r]*1*OP1[y,r]
+  #    biop1[y,r]<-EIOP1[y,r]*pow(CV[r],2)/n[y,r]
       
       # 0+ parr abundance
       P0[y,r]~dlnorm(1.1,0.42)
       
       # 0+ parr measurement
       IP0[y,r]~dnegbin(1/(bip0[y,r]+1),EIP0[y,r]/bip0[y,r]) 
-      EIP0[y,r]<-n[y,r]*5*P0[y,r]
+      EIP0[y,r]<-n[y,r]*1*P0[y,r]
       bip0[y,r]<-EIP0[y,r]*pow(CV[r],2)/n[y,r]
     }
     
@@ -108,7 +103,13 @@ model{
     
     # alpha: survival from 0+ to 1+
     alpha[r]~dlnorm(M.alpha[r],T.alpha)
-    M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
+    #M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
+    M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
+  # a.alpha: basic level, small tributaries
+  # b.alpha[1]: =0 for small tribs
+  # b.alpha[2]: ~D() for large tribs
+  # b.alpha[3]: ~D() for Teno main stem
+
 
     # betas: survival to smolt stage
     betas[r]~dlnorm(M.betas[r],T.alpha)
@@ -176,7 +177,8 @@ model{
     }
   }
   a.alpha~dnorm(0,0.0001)
-  b.alpha~dnorm(0,0.0001)
+  b.alpha[1]<-0
+  b.alpha[2]~dnorm(0,0.0001)
   a.betas~dnorm(0,0.0001)
   b.betas~dnorm(0,0.0001)T(,0)
   corr<-0
@@ -201,6 +203,7 @@ stocks<-c(1:7);dataName<-"Teno6&Torne"
 # 6: Inarijoki (vakiot)
 # (7: Tornionjoki)
 
+streamcat<-c(2,1,1,1,1,1,1)
 
 # Params for reproduction areas
 EA<-c(
@@ -229,7 +232,8 @@ SA<-c(
 
 data<-list(
   n=n[,stocks], CIS=CIS[,stocks], IS=IS[,stocks], 
-  IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], IOP1=IOP1[,stocks],
+  IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], #IOP1=IOP1[,stocks],
+  streamcat=streamcat,
   years=ifelse(length(stocks)==1,1,dim(n[,stocks])[1]),
   rivers=length(stocks),
   EA=EA[stocks],SA=SA[stocks]

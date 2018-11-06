@@ -41,8 +41,10 @@ df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02" | river
 # Pulmanki, Tsars, Kevo
 df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02")%>%
   ungroup()%>%
-  mutate(stock=ifelse(river=="01.01", 2, ifelse(river=="01.03.01", 4, ifelse(river=="01.03.02", 5,river))))
+  mutate(rivername=ifelse(river=="01.01", "Pulmanki", ifelse(river=="01.03.01", "Tsars", ifelse(river=="01.03.02", "Kevo",river))))
+  #mutate(stock=ifelse(river=="01.01", 2, ifelse(river=="01.03.01", 4, ifelse(river=="01.03.02", 5,river))))
 
 df_trib<-df3%>%select(-IOP1)%>%
-  select(-river)%>%
-  mutate(stock=parse_double(stock))
+  select(-river)
+#%>%
+ # mutate(stock=parse_double(stock))

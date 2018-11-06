@@ -62,7 +62,8 @@ dens2<-select(dens, -n_juveniles)%>%
 
 df_MS<-select(dens, -ave_density)%>%
   spread(key=age, value=n_juveniles)%>%
-  mutate(stock=1)%>%
+  #mutate(stock=1)%>%
+  mutate(rivername="TenoMS")%>%
   select(-IOP1) # leave IOP1 out so the same data is not added twice
 
 
