@@ -42,6 +42,8 @@ model{
     LS[y,4]<-log(S[y,5]) # Kevo
     LS[y,5]<-log(S[y,7]) # Torne
 
+    #LS[y,2]<-log(S[y,7]) # Utsjoki tot
+    ##LS[y,5]<-log(S[y,7]) # Torne
 
     for(r in 1:rivers){ # sub-populations separately (2: Utsjoki main!)
       
@@ -109,8 +111,7 @@ model{
     # alpha: survival from 0+ to 1+
     alpha[r]~dlnorm(M.alpha[r],T.alpha)
     #M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
-    M.alpha[r]<-a.alpha+b.alpha-0.5/T.alpha
-  #  M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
+    M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
   # a.alpha: basic level, small tributaries
   # b.alpha[1]: =0 for small tribs
   # b.alpha[2]: ~D() for large tribs
@@ -120,7 +121,7 @@ model{
     # betas: survival to smolt stage
     betas[r]~dlnorm(M.betas[r],T.alpha)
     #M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
-    M.betas[r]<-a.betas+b.betas-0.5/T.alpha
+    M.betas[r]<-a.betas+b.betas[streamcat[r]]-0.5/T.alpha
 
     # betap: survival of >1+ parr
     betap[r]~dlnorm(log(mu.betap)-0.5/T.betap,T.betap)
@@ -211,7 +212,7 @@ stocks<-c(1:7);dataName<-"Teno6&Torne"
 # 6: Inarijoki (vakiot)
 # (7: Tornionjoki)
 
-streamcat<-c(2,1,1,1,1,1,1)
+streamcat<-rep(1, length(stocks))#c(2,1,1,1,1,1,1)
 
 # Params for reproduction areas
 EA<-c(
