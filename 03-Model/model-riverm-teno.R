@@ -92,7 +92,7 @@ model{
   }
   
   for(y in 1:4){
-    for( r in 1:rivers){
+    for( r in 1:(rivers+1)){
       P2[y,r]~dlnorm(1.1,0.42)
       P1[y,r]~dlnorm(1.1,0.42)
       P0[y,r]~dlnorm(1.1,0.42)
@@ -109,7 +109,8 @@ model{
     # alpha: survival from 0+ to 1+
     alpha[r]~dlnorm(M.alpha[r],T.alpha)
     #M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
-    M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
+    M.alpha[r]<-a.alpha+b.alpha-0.5/T.alpha
+  #  M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
   # a.alpha: basic level, small tributaries
   # b.alpha[1]: =0 for small tribs
   # b.alpha[2]: ~D() for large tribs
@@ -118,7 +119,8 @@ model{
 
     # betas: survival to smolt stage
     betas[r]~dlnorm(M.betas[r],T.alpha)
-    M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
+    #M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
+    M.betas[r]<-a.betas+b.betas-0.5/T.alpha
 
     # betap: survival of >1+ parr
     betap[r]~dlnorm(log(mu.betap)-0.5/T.betap,T.betap)
