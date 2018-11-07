@@ -48,3 +48,57 @@ df_trib<-df3%>%select(-IOP1)%>%
   select(-river)
 #%>%
  # mutate(stock=parse_double(stock))
+
+
+# Smolt trap data 1989-1994: Pulmanki, Tsars, Kevo (Karigas, Kuoppilas, Kalddas not included yet)
+###########################################
+
+File<-"H:/Projects/ISAMA/data/der/Teno_smolts_89-94.xlsx"
+
+df<-read_xlsx(File, na="", range="J4:P21")%>%
+  mutate(mu=round((p_min+p_mean+p_max)/3,2), # transform from triangular into lognormal
+         var= round((p_min^2+p_mean^2+p_max^2-p_min*p_max-p_min*p_mean-p_mean*p_max)/18,4),
+         cv=round(sqrt(var)/mu,2))
+
+# M_traps<-"model{
+# 
+# for(i in 1:17){
+#   smoltEst[i]<-n[i]/p[i]
+#   tau[i]<-1/log(cv[i]*cv[i]+1)
+#   p[i]~dlnorm(log(mu[i])-0.5/tau[i], tau[i])
+# }
+# 
+# }"
+# 
+# data<-list(n=df$n, mu=df$mu, cv=df$cv)
+# 
+# var_names<-c("smoltEst", "p")
+# 
+# run <- run.jags(M_traps, 
+#                  data=data,monitor=var_names, inits=NA,
+#                  n.chains = 2, method = 'parallel', thin=1, burnin =100, 
+#                  modules = "mix",keep.jags.files=T,sample =10000, adapt = 1000, 
+#                  progress.bar=TRUE)
+# 
+# #plot(run)
+# 
+# traps<-summary(run)
+# save(traps, file="01-Data/summary_traps.RData")
+
+load("01-Data/summary_traps.RData")
+
+tmp<-as.tibble(traps[1:17,4:5])%>%
+  mutate(year=c(1989:1994, 1989:1994, 1989:1991,1993,1994),
+                 river=c(rep("Pulmanki", 6), rep("Tsars",6), rep("Kevo",5)))
+
+tmp2<-full_join(df,tmp)%>%
+  select(year, river, n, Mean, SD)%>%
+  mutate(CIS=round(SD/Mean,2),
+    IS=log(Mean/1000*(CIS*CIS+1)))%>%
+  mutate(rivername=river)%>%
+  select(year, rivername, IS, CIS)
+
+df_trib<-full_join(df_trib, tmp2)
+#View(TMP)
+
+

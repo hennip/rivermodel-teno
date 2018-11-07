@@ -5,6 +5,7 @@ dfT<-full_join(df_MS,dfU, by=NULL)%>%
   mutate(n=ifelse(n==0, 1,n))%>%
   filter(year>=1980)
 
+filter(dfT, is.na(rivername==T))
 
 #View(dfT)
 #df<-dfT
@@ -23,7 +24,7 @@ df<-full_join(dfT,dfB2, by=NULL)%>%
   mutate(stock=fct_recode(stock, "1"="TenoMS","2"="Pulmanki", "3"="Utsjoki", 
                                   "4"="Tsars", "5"="Kevo", "6"="Inari", "7"="Torne"))
 
-View(df)
+#View(df)
 
 
 df<-df%>%ungroup
@@ -35,13 +36,13 @@ n<-as.matrix(df%>%select(n, stock, year)%>%
 
 CIS<-as.matrix(df%>%select(CIS, stock, year)%>%
   spread(key=stock, value=CIS)%>%
-    select(`3`,`7`,-year)%>%
+    select(`2`,`3`,`4`,`5`,`7`,-year)%>%
     replace(is.na(.),0.2))
 
 IS<-as.matrix(df%>%select(IS, stock, year)%>%
   spread(key=stock, value=IS)%>%
-  select(`3`,`7`,-year))
-
+    select(`2`,`3`,`4`,`5`,`7`,-year))
+    
 IP1<-round(as.matrix(df%>%select(IP1, stock, year)%>%
   spread(key=stock, value=IP1)%>%
     select(-year)))

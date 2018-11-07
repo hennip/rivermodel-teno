@@ -4,7 +4,7 @@
 
 
 
-stocksys<-c(1,2,3,3,3,6,7,3)
+#stocksys<-c(1,2,3,3,3,6,7,3)
 
 M1<-"
 
@@ -24,19 +24,24 @@ model{
 #    ES[y,7]<-betas[7]*(p[1,7]*P2[y-1,7]+p[2,7]*P1[y-1,7])*A[7]/100  #Torne
     ES[y,8]<-sum(ES[y,3:5])                                         # Utsjoki tot
             
-
-    for(r in 1:(rivers+1)){ # Individual stocks & stock systems
-
-      #smolt measurements on log scale
-      IS[y,r]~dnorm(LS[y,r],Tau[y,r])		
-      LS[y,r]<-log(S[y,r])
-      Tau[y,r]<-1/log(pow(CIS[y,r],2)+1)							#Distribution of smolt measurement
-      
-      #smolt abundance
+    for(r in 1:(rivers+1)){ # indiv. stocks and stock systems (+1 is Utsjoki total)
+      # smolt abundance
       S[y,r]~dlnorm(MS[y,r],tauS[y,r])	
       MS[y,r]<-log(ES[y,r])-0.5/tauS[y,r]
       tauS[y,r]<-1/log(mu.gammas/ES[y,r]+1+0.001) # mu.gammas/ES[y,r] =CV^2 <=> mu.gammas = var(x)/ES
     }
+
+    for(r in 1:n_smoltcount){ # stocks with smolt count
+      #smolt measurements on log scale
+      IS[y,r]~dnorm(LS[y,r],Tau[y,r])		
+      Tau[y,r]<-1/log(pow(CIS[y,r],2)+1)							#Distribution of smolt measurement
+    }
+    LS[y,1]<-log(S[y,2]) # Pulmanki
+    LS[y,2]<-log(S[y,8]) # Utsjoki tot
+    LS[y,3]<-log(S[y,4]) # Tsars
+    LS[y,4]<-log(S[y,5]) # Kevo
+    LS[y,5]<-log(S[y,7]) # Torne
+
 
     for(r in 1:rivers){ # sub-populations separately (2: Utsjoki main!)
       
@@ -194,6 +199,7 @@ cat(M1,file=Mname)
 #stocks<-c(1:4);dataName<-"Teno4"
 stocks<-c(1:7);dataName<-"Teno6&Torne"
 
+
 #stocks:
 # 1: Teno main stem
 # 2: Pulmanki
@@ -231,11 +237,12 @@ SA<-c(
 
 
 data<-list(
-  n=n[,stocks], CIS=CIS[,stocks], IS=IS[,stocks], 
+  n=n[,stocks], CIS=CIS, IS=IS, 
   IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], #IOP1=IOP1[,stocks],
   streamcat=streamcat,
   years=ifelse(length(stocks)==1,1,dim(n[,stocks])[1]),
   rivers=length(stocks),
+  n_smoltcount=dim(IS)[2],
   EA=EA[stocks],SA=SA[stocks]
 )
 
