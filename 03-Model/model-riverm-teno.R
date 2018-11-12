@@ -5,6 +5,15 @@
 
 
 #stocksys<-c(1,2,3,3,3,6,7,3)
+# Stocks:
+# 1: Teno MS
+# 2: Pulmanki
+# 3: Utsjoki MS
+# 4: Tsars
+# 5: Kevo
+# 6: Inari
+# 7: Utsjoki tot (/Torne, in which case 8: Uts tot)
+
 
 M1<-"
 
@@ -15,14 +24,7 @@ model{
     for(r in 1:rivers){
       ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100
     }
-#    ES[y,1]<-betas[1]*(p[1,1]*P2[y-1,1]+p[2,1]*P1[y-1,1])*A[1]/100  #Teno MS
-#    ES[y,2]<-betas[2]*(p[1,2]*P2[y-1,2]+p[2,2]*P1[y-1,2])*A[2]/100  #Pulmanki
-#    ES[y,3]<-betas[3]*(p[1,3]*P2[y-1,3]+p[2,3]*P1[y-1,3])*A[3]/100  #Utsjoki main
-#    ES[y,4]<-betas[4]*(p[1,4]*P2[y-1,4]+p[2,4]*P1[y-1,4])*A[4]/100  #Tsars
-#    ES[y,5]<-betas[5]*(p[1,5]*P2[y-1,5]+p[2,5]*P1[y-1,5])*A[5]/100  #Kevo
-#    ES[y,6]<-betas[6]*(p[1,6]*P2[y-1,6]+p[2,6]*P1[y-1,6])*A[6]/100  #Inari
-#    ES[y,7]<-betas[7]*(p[1,7]*P2[y-1,7]+p[2,7]*P1[y-1,7])*A[7]/100  #Torne
-    ES[y,8]<-sum(ES[y,3:5])                                         # Utsjoki tot
+    ES[y,7]<-sum(ES[y,3:5]) # Utsjoki tot
             
     for(r in 1:(rivers+1)){ # indiv. stocks and stock systems (+1 is Utsjoki total)
       # smolt abundance
@@ -36,16 +38,16 @@ model{
       IS[y,r]~dnorm(LS[y,r],Tau[y,r])		
       Tau[y,r]<-1/log(pow(CIS[y,r],2)+1)							#Distribution of smolt measurement
     }
+
     LS[y,1]<-log(S[y,2]) # Pulmanki
-    LS[y,2]<-log(S[y,8]) # Utsjoki tot
+    LS[y,2]<-log(S[y,7]) # Utsjoki tot
     LS[y,3]<-log(S[y,4]) # Tsars
     LS[y,4]<-log(S[y,5]) # Kevo
-    LS[y,5]<-log(S[y,7]) # Torne
 
-    #LS[y,2]<-log(S[y,7]) # Utsjoki tot
-    ##LS[y,5]<-log(S[y,7]) # Torne
+    #LS[y,2]<-log(S[y,8]) # Utsjoki tot
+    #LS[y,5]<-log(S[y,7]) # Torne
 
-    for(r in 1:rivers){ # sub-populations separately (2: Utsjoki main!)
+    for(r in 1:rivers){ # sub-populations separately (3: Utsjoki main stem!)
       
       # >=2+ parr abundance  relative density!
       P2[y,r]~dlnorm(MP2[y,r],tauP2[y,r])
@@ -109,9 +111,9 @@ model{
     Atau[r]<-1/pow(SA[r],2)
     
     # alpha: survival from 0+ to 1+
-    alpha[r]~dlnorm(M.alpha[r],T.alpha)
+    alpha[r]~dlnorm(M.alpha,T.alpha)
     #M.alpha[r]<-a.alpha+b.alpha*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
-    M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
+    #M.alpha[r]<-a.alpha+b.alpha[streamcat[r]]-0.5/T.alpha
   # a.alpha: basic level, small tributaries
   # b.alpha[1]: =0 for small tribs
   # b.alpha[2]: ~D() for large tribs
@@ -119,9 +121,9 @@ model{
 
 
     # betas: survival to smolt stage
-    betas[r]~dlnorm(M.betas[r],T.alpha)
+    betas[r]~dlnorm(M.betas,T.alpha)
     #M.betas[r]<-a.betas+b.betas*(AL[r]-mean(AL[]))/sd(AL[])-0.5/T.alpha
-    M.betas[r]<-a.betas+b.betas[streamcat[r]]-0.5/T.alpha
+    #M.betas[r]<-a.betas+b.betas[streamcat[r]]-0.5/T.alpha
 
     # betap: survival of >1+ parr
     betap[r]~dlnorm(log(mu.betap)-0.5/T.betap,T.betap)
@@ -161,6 +163,8 @@ model{
   T.gammap2<-1/log(c2.gamma/mu.gammap2+1)
   T.gammas<-1/log(c3.gamma/mu.gammas+1)
   
+  M.alpha<-a.alpha-0.5/T.alpha
+  M.betas<-a.betas-0.5/T.alpha
   T.alpha<-1/log(c.beta*c.beta+1)
   c.beta~dunif(0.01,2) 
   mu.CV~dlnorm(-2.3,0.22) # sm.dlnorm(1,100)
@@ -200,52 +204,41 @@ cat(M1,file=Mname)
 
 # Choose stocks to be included
 #stocks<-c(1:4);dataName<-"Teno4"
-stocks<-c(1:7);dataName<-"Teno6&Torne"
+#stocks<-c(1:7);dataName<-"Teno6&Torne"
+stocks<-c(1:6);dataName<-"Teno6"; n_smoltcount=dim(IS)[2]-1
 
-
-#stocks:
-# 1: Teno main stem
-# 2: Pulmanki
-# 3: Utsjoki main (pinta-ala, parrit) / tot (smoltit)
-# 4: Tsars
-# 5: Kevo
-# 6: Inarijoki (vakiot)
-# (7: Tornionjoki)
 
 streamcat<-rep(1, length(stocks))#c(2,1,1,1,1,1,1)
 
 # Params for reproduction areas
 EA<-c(
-  7.533, #1: TMS
-  3.9106, # 2: Pulmanki
-  4.4694, # 3: Utsjoki main
-  4.3032, # Tsars
-  4.1185, # Kevo
- # 5.4816, #Utsjoki tot
-  6.7516, # Inari tot
-  8.595# Torne
+  
+  7.571789, #1: TMS
+  4.384182, # 2: Pulmanki
+  4.832325, # 3: Utsjoki main
+  4.314214, # Tsars
+  4.442797, # Kevo
+  6.329898
 ) 
 
 SA<-c(
-  0.482, #TMS
-  0.4678,# Pulmanki
-  0.4808, # Utsjoki main
-  0.4808, # Tsars
-  0.4808, # Kevo
-  #0.2822, #Utsjoki tot
-  0.3518, # Inari tot
-  0.1417 # Torne
-
+  0.2113711, #1: TMS
+  0.1389517, # 2: Pulmanki
+  0.0770892, # 3: Utsjoki main
+  0.1397690, # Tsars
+  0.1187222, # Kevo
+  0.2099738
+  
 )
 
 
 data<-list(
-  n=n[,stocks], CIS=CIS, IS=IS, 
+  n=n[,stocks], CIS=CIS[,1:n_smoltcount], IS=IS[,1:n_smoltcount], 
   IP1=IP1[,stocks], IP2=IP2[,stocks], IP0=IP0[,stocks], #IOP1=IOP1[,stocks],
   streamcat=streamcat,
   years=ifelse(length(stocks)==1,1,dim(n[,stocks])[1]),
   rivers=length(stocks),
-  n_smoltcount=dim(IS)[2],
+  n_smoltcount=n_smoltcount,
   EA=EA[stocks],SA=SA[stocks]
 )
 

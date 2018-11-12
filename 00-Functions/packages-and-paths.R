@@ -17,7 +17,7 @@ source("00-Functions/my-palette.r")
 
 
 # Path for input data
-#pathIn<-
+pathIn<-"H:/Projects/ISAMA/data/"
 
 # Path for simulation output
 pathOut<-"H:/Projects/ISAMA/prg/output/rivermodel-teno/"
