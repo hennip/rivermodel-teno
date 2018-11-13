@@ -23,7 +23,7 @@ df2<-setNames(df2,c("year","q5","q25","q50","q75","q95","stock"))
 
 df<-as.tibble(df2)%>%
   mutate(Year=year+1979)%>%
-  filter(Year>1986)%>%
+  filter(Year>1983)%>%
   mutate(stock=parse_factor(stock, levels=rivernames))
 
 
