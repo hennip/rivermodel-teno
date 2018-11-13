@@ -34,17 +34,25 @@ df2<-df2%>%select(river,year, place, acre, IP0, IP1, IP2, IOP1)%>%
 
 #View(df2)
 
-# Pulmanki, Tsars, Kevo, Akujoki, Karasjoki, Iesjoki
-df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02" | river=="01.07"
-                  | river=="03" | river=="03.01")
+# Pulmanki, Vetsijoki, Tsars, Kevo, 
+# Kuoppilasjoki, Nilijoki, Akujoki#, Karasjoki, Iesjoki
+df3<-df2%>%filter(river=="01.01" |river=="01.02" | river=="01.03.01" | river=="01.03.02" | 
+                    river=="01.04"|river=="01.06"|river=="01.07")#| river=="03" | river=="03.01")
 
-# Pulmanki, Tsars, Kevo
-df3<-df2%>%filter(river=="01.01" | river=="01.03.01" | river=="01.03.02")%>%
+# Name 'em
+df4<-df3%>%#filter(river=="01.01" | river=="01.03.01" | river=="01.03.02")%>%
   ungroup()%>%
-  mutate(rivername=ifelse(river=="01.01", "Pulmanki", ifelse(river=="01.03.01", "Tsars", ifelse(river=="01.03.02", "Kevo",river))))
-  #mutate(stock=ifelse(river=="01.01", 2, ifelse(river=="01.03.01", 4, ifelse(river=="01.03.02", 5,river))))
+  mutate(rivername=
+           ifelse(river=="01.01", "Pulmanki", 
+                  ifelse(river=="01.02", "Vetsijoki",
+                         ifelse(river=="01.03.01", "Tsars", 
+                                ifelse(river=="01.03.02", "Kevo",
+                                       ifelse(river=="01.04", "Kuoppilas",
+                                              ifelse(river=="01.06", "Nilijoki",
+                                                     ifelse(river=="01.07", "Akujoki",river))))))))
+#mutate(stock=ifelse(river=="01.01", 2, ifelse(river=="01.03.01", 4, ifelse(river=="01.03.02", 5,river))))
 
-df_trib<-df3%>%select(-IOP1)%>%
+df_trib<-df4%>%select(-IOP1)%>%
   select(-river)
 #%>%
  # mutate(stock=parse_double(stock))
@@ -99,6 +107,6 @@ tmp2<-full_join(df,tmp)%>%
   select(year, rivername, IS, CIS)
 
 df_trib<-full_join(df_trib, tmp2)
-#View(TMP)
+#View(df_trib)
 
 

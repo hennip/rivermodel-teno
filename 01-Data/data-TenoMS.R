@@ -66,4 +66,8 @@ df_MS<-select(dens, -ave_density)%>%
   mutate(rivername="TenoMS")%>%
   select(-IOP1) # leave IOP1 out so the same data is not added twice
 
+# Years to be predicted!
+df_tmp<-tibble(year=c(2018:2019),n=c(0,0), 
+               IP0=rep(NA_real_, 2),IP1=rep(NA_real_, 2),IP2=rep(NA_real_, 2),rivername="TenoMS")
 
+df_MS<-full_join(df_MS, df_tmp)

@@ -1,12 +1,13 @@
 
 #summary(run, var="S")
+#summary(run, var="38]")
 #plot(run, var="S[20,1]")
 #summary(as.mcmc(chains[,"S[2,7]"][[1]]))
 
 
-years<-c(1980:2020) 
+years<-c(1980:2019) 
 nyears<-length(years)
-rivernames<-c(RiverNames, "Utsjoki_tot")
+rivernames<-c(RiverNames, "Utsjoki_tot", "Teno tot")
 nstocks<-length(rivernames)
 
 

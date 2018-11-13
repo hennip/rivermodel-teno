@@ -82,7 +82,7 @@ for( i in 1:N){
 Atot[1]<-sum(A[1:4])
 Atot[2]<-sum(A[5:6])
 Atot[3]<-sum(A[7:9])
-Atot[4]<-sum(A[10:11])
+Atot[4]<-sum(A[10:11]) # Karasjoki ala only
 Atot[5]<-sum(A[12:13])
 Atot[6]<-sum(A[14])
 Atot[7]<-sum(A[15])
@@ -99,7 +99,7 @@ Atot[17]<-A[33]
 Atot[18]<-A[34]
 Atot[19]<-A[35]
 Atot[20]<-A[36]
-Atot[21]<-A[37]
+Atot[21]<-Atot[4]+A[37] # Karasjoki ala + yla
 Atot[22]<-A[38]
 Atot[23]<-A[39]
 Atot[24]<-A[40]
@@ -151,32 +151,41 @@ areas<-right_join(tmp1, tmp2)%>%
   mutate(cv=SD/Mean,
          SA=sqrt(log(cv^2+1)),
          EA=log(Mean)-0.5*SA^2)%>%
-  filter(river=="Teno pääuoma"| river=="Pulmanki" | river=="Utsjoki"| 
-           river=="Tsarsjoki"| river=="Kevojoki"| river=="Inarijoki")%>%
+  filter(river=="Teno pääuoma"| river=="Pulmanki"| river=="Vetsijoki" | river=="Utsjoki"| 
+           river=="Tsarsjoki"| river=="Kevojoki"|
+           river=="Kuoppilasjoki"| river=="Nilijoki"|
+           river=="Akujoki"|
+           river=="Inarijoki")%>%
   select(river, EA, SA)
-         
 
+#View(areas)         
 
-7.571789, #1: TMS
-4.384182, # 2: Pulmanki
-4.832325, # 3: Utsjoki main
-4.314214, # Tsars
-4.442797, # Kevo
-6.329898
-
-0.2113711, #1: TMS
-0.1389517, # 2: Pulmanki
-0.0770892, # 3: Utsjoki main
-0.1397690, # Tsars
-0.1187222, # Kevo
-0.2099738
-
-
-# # EA; SA
-# log(55.7)-0.5*log(0.4946^2+1); sqrt(log(0.4946^2+1))
-# #3.9106 
-# #0.4678
-
+# 
+# 
+# 7.571789, #1: TMS
+# 4.384182, # 2: Pulmanki
+# 4.849535, # 3: Vetsijoki
+# 4.832325, # 4: Utsjoki main
+# 4.314214, # 5: Tsars
+# 4.442797, # 6: Kevo
+# 3.447606, # 7: Kuoppilasjoki
+# 3.276931, # 8: Nilijoki
+# 2.374227, # 9: Akujoki
+# 6.329898 # 10: Inari
+# 
+# 0.2113711, #1: TMS
+# 0.1389517, # 2: Pulmanki
+# 0.1241878, # 3: Vetsijoki
+# 0.07614008, # 4: Utsjoki main
+# 0.14195152, # 5: Tsars
+# 0.11507365, # 6: Kevo
+# 0.15462176, # 7: Kuoppilasjoki
+# 0.12147614, # 8: Nilijoki
+# 0.14841259, # 9: Akujoki
+# 0.21966877 # 10: Inari
+# 
+# 
+# 
 
 
 

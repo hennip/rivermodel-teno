@@ -8,12 +8,16 @@
 # Stocks:
 # 1: Teno MS
 # 2: Pulmanki
-# 3: Utsjoki MS
-# 4: Tsars
-# 5: Kevo
-# 6: Inari
-# 7: Utsjoki tot (/Torne, in which case 8: Uts tot)
-
+# 3: Vetsijoki
+# 4: Utsjoki MS
+# 5: Tsars
+# 6: Kevo
+# 7: Kuoppilasjoki
+# 8: Nilijoki
+# 9: Akujoki
+# 10: Inari
+# 11: Utsjoki tot 
+# 12: Teno tot 
 
 M1<-"
 
@@ -24,9 +28,10 @@ model{
     for(r in 1:rivers){
       ES[y,r]<-betas[r]*(p[1,r]*P2[y-1,r]+p[2,r]*P1[y-1,r])*A[r]/100
     }
-    ES[y,7]<-sum(ES[y,3:5]) # Utsjoki tot
+    ES[y,11]<-sum(ES[y,4:6]) # Utsjoki tot
+    ES[y,12]<-sum(ES[y,1:10]) # Teno tot
             
-    for(r in 1:(rivers+1)){ # indiv. stocks and stock systems (+1 is Utsjoki total)
+    for(r in 1:(rivers+2)){ # numb. indiv. stocks and stock systems 
       # smolt abundance
       S[y,r]~dlnorm(MS[y,r],tauS[y,r])	
       MS[y,r]<-log(ES[y,r])-0.5/tauS[y,r]
@@ -36,18 +41,16 @@ model{
     for(r in 1:n_smoltcount){ # stocks with smolt count
       #smolt measurements on log scale
       IS[y,r]~dnorm(LS[y,r],Tau[y,r])		
-      Tau[y,r]<-1/log(pow(CIS[y,r],2)+1)							#Distribution of smolt measurement
+      Tau[y,r]<-1/log(pow(CIS[y,r],2)+1)
     }
 
+    # stocks with smolt counts
     LS[y,1]<-log(S[y,2]) # Pulmanki
-    LS[y,2]<-log(S[y,7]) # Utsjoki tot
-    LS[y,3]<-log(S[y,4]) # Tsars
-    LS[y,4]<-log(S[y,5]) # Kevo
+    LS[y,2]<-log(S[y,11]) # Utsjoki tot
+    LS[y,3]<-log(S[y,5]) # Tsars
+    LS[y,4]<-log(S[y,6]) # Kevo
 
-    #LS[y,2]<-log(S[y,8]) # Utsjoki tot
-    #LS[y,5]<-log(S[y,7]) # Torne
-
-    for(r in 1:rivers){ # sub-populations separately (3: Utsjoki main stem!)
+    for(r in 1:rivers){ # sub-populations (4: Utsjoki MS)
       
       # >=2+ parr abundance  relative density!
       P2[y,r]~dlnorm(MP2[y,r],tauP2[y,r])
@@ -96,7 +99,7 @@ model{
   }
   
   for(y in 1:4){
-    for( r in 1:(rivers+1)){
+    for( r in 1:(rivers+2)){
       P2[y,r]~dlnorm(1.1,0.42)
       P1[y,r]~dlnorm(1.1,0.42)
       P0[y,r]~dlnorm(1.1,0.42)
@@ -203,9 +206,9 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
 # Choose stocks to be included
-#stocks<-c(1:4);dataName<-"Teno4"
 #stocks<-c(1:7);dataName<-"Teno6&Torne"
-stocks<-c(1:6);dataName<-"Teno6"; n_smoltcount=dim(IS)[2]-1
+#stocks<-c(1:6);dataName<-"Teno6"; n_smoltcount=dim(IS)[2]
+stocks<-c(1:10);dataName<-"Teno10"; n_smoltcount=dim(IS)[2]
 
 
 streamcat<-rep(1, length(stocks))#c(2,1,1,1,1,1,1)
@@ -213,21 +216,30 @@ streamcat<-rep(1, length(stocks))#c(2,1,1,1,1,1,1)
 # Params for reproduction areas
 EA<-c(
   
+  
   7.571789, #1: TMS
   4.384182, # 2: Pulmanki
-  4.832325, # 3: Utsjoki main
-  4.314214, # Tsars
-  4.442797, # Kevo
-  6.329898
+  4.849535, # 3: Vetsijoki
+  4.832325, # 4: Utsjoki main
+  4.314214, # 5: Tsars
+  4.442797, # 6: Kevo
+  3.447606, # 7: Kuoppilasjoki
+  3.276931, # 8: Nilijoki
+  2.374227, # 9: Akujoki
+  6.329898 # 10: Inari
 ) 
 
 SA<-c(
   0.2113711, #1: TMS
   0.1389517, # 2: Pulmanki
-  0.0770892, # 3: Utsjoki main
-  0.1397690, # Tsars
-  0.1187222, # Kevo
-  0.2099738
+  0.1241878, # 3: Vetsijoki
+  0.07614008, # 4: Utsjoki main
+  0.14195152, # 5: Tsars
+  0.11507365, # 6: Kevo
+  0.15462176, # 7: Kuoppilasjoki
+  0.12147614, # 8: Nilijoki
+  0.14841259, # 9: Akujoki
+  0.21966877 # 10: Inari
   
 )
 
