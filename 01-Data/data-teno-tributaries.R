@@ -1,3 +1,6 @@
+# Tributary electrofishing data before 2000
+###########################################
+
 File1<-"H:/Projects/ISAMA/data/orig/TENO SAHKODATA/SahkoDataLaaja sivujoet ennen v.2000.xlsx"
 # Original location: G:\ex-RKTL\0_HOT\Kalavarat\Tenojoki\TENO-NÄÄTÄMÖ_SÄHKÖDATA\Sivujoet
 
@@ -29,6 +32,8 @@ df2<-df2%>%select(river,year, place, acre, IP0, IP1, IP2, IOP1)%>%
 
 df3<-df2%>%filter(river=="01.01" |river=="01.02" | river=="01.03.01" | river=="01.03.02" | 
                     river=="01.04"|river=="01.06"|river=="01.07")
+#df3<-df2
+
 # Name 'em
 df4<-df3%>%
   ungroup()%>%
@@ -44,7 +49,8 @@ df_trib_old<-df4%>%select(-IOP1)%>%
   select(-river)
 
 
-# Tributary data from 2000 and onwards
+# Tributary electrofishing data from 2000 and onwards
+###########################################
 
 File<-"H:/Projects/ISAMA/data/orig/TENO SAHKODATA/Sivujoki 2000-luku originaalidata 250315.xlsx"
 # Original location: G:\ex-RKTL\0_HOT\Kalavarat\Tenojoki\TENO-NÄÄTÄMÖ_SÄHKÖDATA\Sivujoet
@@ -74,7 +80,7 @@ df2<-df2%>%select(river,year, place, acre, IP0, IP1, IP2, IOP1)%>%
 # Kuoppilasjoki, Nilijoki, Akujoki#, Karasjoki, Iesjoki
 df3<-df2%>%filter(river=="01.01" |river=="01.02" | river=="01.03.01" | river=="01.03.02" | 
                     river=="01.04"|river=="01.06"|river=="01.07")#| river=="03" | river=="03.01")
-
+#df3<-df2
 # Name 'em
 df4<-df3%>%#filter(river=="01.01" | river=="01.03.01" | river=="01.03.02")%>%
   ungroup()%>%
@@ -85,23 +91,9 @@ df4<-df3%>%#filter(river=="01.01" | river=="01.03.01" | river=="01.03.02")%>%
                               "Kuoppilas"="01.04", "Nilijoki" ="01.06",
                               "Akujoki"="01.07"))
   
-  
-  
-#   
-#     mutate(rivername=
-#            ifelse(river=="01.01", "Pulmanki", 
-#                   ifelse(river=="01.02", "Vetsijoki",
-#                          ifelse(river=="01.03.01", "Tsars", 
-#                                 ifelse(river=="01.03.02", "Kevo",
-#                                        ifelse(river=="01.04", "Kuoppilas",
-#                                               ifelse(river=="01.06", "Nilijoki",
-#                                                      ifelse(river=="01.07", "Akujoki",river))))))))
-# #mutate(stock=ifelse(river=="01.01", 2, ifelse(river=="01.03.01", 4, ifelse(river=="01.03.02", 5,river))))
 
 df_trib_new<-df4%>%select(-IOP1)%>%
   select(-river)
-#%>%
- # mutate(stock=parse_double(stock))
 
 
 # Smolt trap data 1989-1994: Pulmanki, Tsars, Kevo (Karigas, Kuoppilas, Kalddas not included yet)
@@ -158,4 +150,4 @@ df_trib<-full_join(df_trib_new,df_trib_old)%>%
   full_join(tmp2)
 #View(df_trib)
 
-
+#View(df_trib%>%arrange(rivername))

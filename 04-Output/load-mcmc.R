@@ -7,11 +7,12 @@
 #load(str_c(pathOut,"rivermodelTeno_Teno6&Torne.RData")) ; RiverNames<-RiverNames1
 
 
-RiverNames2=c("TenoMS", "Pulmanki", "Vetsijoki",
+RiverNames=c("TenoMS", "Pulmanki", "Vetsijoki",
               "UtsjokiMS", "Tsars", "Kevo",
               "Kuoppilasjoki", "Nilijoki", "Akujoki",
               "Inari")
-load(str_c(pathOut,"rivermodelTeno_Teno6_2.RData")) ; RiverNames<-RiverNames2
+#load(str_c(pathOut,"rivermodelTeno_Teno6_2.RData")) # TMS, Pulmanki, Utsjoki, Tsars, Kevo, Inari
+load(str_c(pathOut,"rivermodelTeno_Teno10.RData")) 
 
 
 #run<-run1
