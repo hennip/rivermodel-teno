@@ -142,7 +142,7 @@ sum_run<-summary(runX)[41:(40+24),4:5] # mean,SD
 tmp1<-df%>%select(river, stock)
 
 tmp2<-as.tibble(sum_run)%>%
-  mutate(stock=parse_factor(1:24, levels=NULL))
+  mutate(stock=as.factor(1:24))
 
 
 

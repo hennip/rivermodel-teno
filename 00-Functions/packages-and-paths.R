@@ -22,7 +22,7 @@ pathIn<-"H:/Projects/ISAMA/data/"
 # Path for simulation output
 pathOut<-"H:/Projects/ISAMA/prg/output/rivermodel-teno/"
 
-source("01-Data/data-baltic-north.r")
+#source("01-Data/data-baltic-north.r")
 source("01-Data/data-Utsjoki.r")
 source("01-Data/data-Inari.r")
 source("01-Data/data-TenoMS.r")

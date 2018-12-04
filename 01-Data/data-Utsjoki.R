@@ -32,7 +32,8 @@ dfU<-full_join(dfX[[1]], dfX[[2]], by=NULL)%>%
 dens<-dfU%>%group_by(year, age)%>%
 summarize(ave_density=mean(density, na.rm=T), n=sum(!is.na(density)))%>%
   mutate(ave_density=ifelse(ave_density=="NaN", NA, ave_density))%>%
-  mutate(n_juveniles= ave_density*n*5) # total number of juveniles across all study areas
+  mutate(n_juveniles= ave_density*n*1) # total number of juveniles across all study areas
+# 1 is rough size of an electrofishing site in acres
 
 dens2<-select(dens, -n_juveniles)%>%
   spread(key=age, value=ave_density)
