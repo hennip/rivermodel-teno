@@ -267,7 +267,7 @@ df<-read_xlsx(File, na="", range="J4:P29")%>%
 
 load("01-Data/summary_traps.RData")
 
-tmp<-as.tibble(traps[1:25,4:5])%>%
+tmp<-as_tibble(traps[1:25,4:5])%>%
   mutate(year=c(1989:1994, 1989:1994, 1989:1991,1993:1994,1990,1990:1994,1991:1992),
                  river=c(rep("Pulmanki", 6), rep("Tsars",6), rep("Kevo",5),
                          "Kalddas",rep("Karigas", 5),rep("Kuoppilas", 2)))
@@ -286,6 +286,6 @@ smolts_trib<-full_join(df,tmp)%>%
                                                   ifelse(rivername=="Kuoppilas", "01.04",NA)))))))
 
 df_trib<-full_join(df_trib,smolts_trib)
-#View(tmpX)
+#View(df_trib)
 
 #View(df_trib%>%arrange(rivername))
